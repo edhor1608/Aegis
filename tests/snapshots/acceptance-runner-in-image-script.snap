@@ -14,6 +14,8 @@ CMDS=(
   "/usr/local/sbin/senior-zero-install-target-smoke"
   "/usr/local/sbin/senior-zero-security-audit"
   "/usr/local/sbin/senior-zero-rollback-rehearsal"
+  "/usr/local/sbin/senior-zero-preflight-report"
+  "/usr/local/sbin/senior-zero-app-center-policy"
 )
 
 if [[ "$DRY_RUN" -eq 1 ]]; then

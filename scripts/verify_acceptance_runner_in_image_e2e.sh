@@ -9,5 +9,7 @@ echo "$OUTPUT" | grep -q "ACCEPTANCE_RUNNER_DRY_RUN"
 echo "$OUTPUT" | grep -q "senior-zero-install-target-smoke"
 echo "$OUTPUT" | grep -q "senior-zero-security-audit"
 echo "$OUTPUT" | grep -q "senior-zero-rollback-rehearsal"
+echo "$OUTPUT" | grep -q "senior-zero-preflight-report"
+echo "$OUTPUT" | grep -q "senior-zero-app-center-policy"
 
 echo "E2E PASS: acceptance runner dry-run is coherent"
