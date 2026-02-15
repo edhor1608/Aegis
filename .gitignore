@@ -12,8 +12,8 @@ build/live-build/config/bootstrap
 build/live-build/config/chroot
 build/live-build/config/common
 build/live-build/config/source
-build/live-build/config/hooks/
-!build/live-build/config/hooks/
+build/live-build/config/hooks/*
 !build/live-build/config/hooks/normal/
+build/live-build/config/hooks/normal/*
 !build/live-build/config/hooks/normal/6000-configure-locales.hook.chroot
 build/live-build/config/package-lists/live.list.chroot
