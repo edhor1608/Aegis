@@ -44,6 +44,7 @@ class LiveBuildPipelineContractTests(unittest.TestCase):
         ok, missing = contains_all(
             text,
             [
+                "user-setup",
                 "snapper",
                 "btrfs-progs",
                 "unattended-upgrades",
