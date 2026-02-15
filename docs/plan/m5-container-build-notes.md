@@ -27,3 +27,4 @@ macOS host does not provide native `live-build`, and direct bind-mounted Docker 
 ## Remaining Practical Constraint
 
 - First full ISO build is long-running; final artifact generation depends on host resources and emulated `amd64` build time.
+- `grub-btrfs` is not available as a Debian Stable package in this environment, so the first bootable ISO baseline excludes it and keeps `snapper + btrfs-progs` until Milestone 6 integration method is finalized.

@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   xorriso \
   squashfs-tools \
   dosfstools \
+  cpio \
   python3 \
   ca-certificates \
   gnupg \

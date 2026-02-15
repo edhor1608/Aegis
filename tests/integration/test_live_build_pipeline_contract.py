@@ -45,13 +45,17 @@ class LiveBuildPipelineContractTests(unittest.TestCase):
             text,
             [
                 "snapper",
-                "grub-btrfs",
+                "btrfs-progs",
                 "unattended-upgrades",
                 "apt-listchanges",
                 "task-lxde-desktop",
             ],
         )
         self.assertTrue(ok, f"Missing package baseline entries: {missing}")
+
+    def test_package_list_excludes_unavailable_grub_btrfs_package(self) -> None:
+        text = read_text(PACKAGE_LIST)
+        self.assertNotIn("grub-btrfs", text)
 
     def test_unattended_policy_is_security_focused(self) -> None:
         text = read_text(UNATTENDED_CFG)

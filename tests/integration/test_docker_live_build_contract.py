@@ -27,6 +27,7 @@ class DockerLiveBuildContractTests(unittest.TestCase):
                 "xorriso",
                 "squashfs-tools",
                 "dosfstools",
+                "cpio",
                 "python3",
             ],
         )

@@ -4,7 +4,6 @@ live-config
 task-lxde-desktop
 network-manager
 snapper
-grub-btrfs
 btrfs-progs
 unattended-upgrades
 apt-listchanges
