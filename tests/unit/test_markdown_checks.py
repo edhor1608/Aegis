@@ -2,7 +2,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from tests.lib.markdown_checks import contains_all, has_heading, normalize_markdown, read_text
+from tests.lib.markdown_checks import contains_all, extract_section, has_heading, normalize_markdown, read_text
 
 
 class MarkdownCheckUnitTests(unittest.TestCase):
@@ -26,6 +26,12 @@ class MarkdownCheckUnitTests(unittest.TestCase):
             path = Path(tmp) / "sample.md"
             path.write_text("sample", encoding="utf-8")
             self.assertEqual(read_text(path), "sample")
+
+    def test_extract_section_returns_target_block(self) -> None:
+        text = "# T\n\n## A\nx\n\n## B\ny\n"
+        self.assertEqual(extract_section(text, "A"), "## A\nx\n")
+        self.assertEqual(extract_section(text, "B"), "## B\ny\n")
+        self.assertEqual(extract_section(text, "Z"), "")
 
 
 if __name__ == "__main__":

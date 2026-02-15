@@ -21,3 +21,25 @@ def normalize_markdown(text: str) -> str:
     lines = [line.rstrip() for line in text.splitlines()]
     normalized = "\n".join(lines).strip() + "\n"
     return normalized
+
+
+def extract_section(text: str, heading: str) -> str:
+    lines = text.splitlines()
+    start_index = None
+
+    for idx, line in enumerate(lines):
+        if line.strip() == f"## {heading}":
+            start_index = idx
+            break
+
+    if start_index is None:
+        return ""
+
+    end_index = len(lines)
+    for idx in range(start_index + 1, len(lines)):
+        if lines[idx].startswith("## "):
+            end_index = idx
+            break
+
+    section = "\n".join(lines[start_index:end_index]).strip()
+    return section + "\n"
