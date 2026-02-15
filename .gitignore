@@ -1,2 +1,16 @@
 __pycache__/
 *.pyc
+out/
+build/live-build/.build/
+build/live-build/.lock
+build/live-build/chroot/
+build/live-build/cache/
+build/live-build/live-image-*.iso
+build/live-build/live-image-*.hybrid.iso
+build/live-build/config/binary
+build/live-build/config/bootstrap
+build/live-build/config/chroot
+build/live-build/config/common
+build/live-build/config/source
+build/live-build/config/hooks/
+build/live-build/config/package-lists/live.list.chroot
