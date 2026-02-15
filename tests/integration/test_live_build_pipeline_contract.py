@@ -125,6 +125,9 @@ class LiveBuildPipelineContractTests(unittest.TestCase):
                 "de_DE.utf8",
                 "en_US.utf8",
                 "whoami",
+                "senior-zero-preflight-report",
+                "senior-zero-app-center-policy",
+                "senior-zero-acceptance-runner --dry-run",
             ],
         )
         self.assertTrue(ok, f"Missing VM smoke checks: {missing}")

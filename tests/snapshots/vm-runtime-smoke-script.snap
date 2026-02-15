@@ -17,6 +17,9 @@ CHECKS=(
   "systemctl is-active NetworkManager | grep -qx 'active'"
   "locale -a | grep -Eiq 'en_US.utf8'"
   "locale -a | grep -Eiq 'de_DE.utf8'"
+  "command -v senior-zero-preflight-report >/dev/null"
+  "command -v senior-zero-app-center-policy >/dev/null"
+  "senior-zero-acceptance-runner --dry-run | grep -q 'ACCEPTANCE_RUNNER_DRY_RUN'"
 )
 
 if [[ "$DRY_RUN" -eq 1 ]]; then
