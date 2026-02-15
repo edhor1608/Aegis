@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DRY_RUN=0
+
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN=1
+elif [[ $# -gt 0 ]]; then
+  echo "Usage: $0 [--dry-run]" >&2
+  exit 2
+fi
+
+CMDS=(
+  "/usr/local/sbin/senior-zero-install-target-smoke"
+  "/usr/local/sbin/senior-zero-security-audit"
+  "/usr/local/sbin/senior-zero-rollback-rehearsal"
+)
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  printf '%s\n' "ACCEPTANCE_RUNNER_DRY_RUN"
+  printf '%s\n' "${CMDS[@]}"
+  exit 0
+fi
+
+for cmd in "${CMDS[@]}"; do
+  if [[ ! -x "$cmd" ]]; then
+    printf 'FAIL: missing executable %s\n' "$cmd" >&2
+    exit 1
+  fi
+  printf 'RUN: %s\n' "$cmd"
+  "$cmd"
+done
+
+printf '%s\n' "ACCEPTANCE_RUNNER_PASS"
