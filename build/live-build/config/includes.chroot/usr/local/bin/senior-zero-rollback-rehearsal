@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+TARGET="/usr/local/sbin/senior-zero-rollback-rehearsal"
+if [[ ! -x "$TARGET" ]]; then
+  TARGET="$(cd "$(dirname "${BASH_SOURCE[0]}")/../sbin" && pwd)/senior-zero-rollback-rehearsal"
+fi
+
+exec "$TARGET" "$@"
