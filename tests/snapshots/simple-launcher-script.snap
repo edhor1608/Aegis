@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DRY_RUN=0
+ACTION=""
+HELP_FILE="/usr/share/senior-zero/help/welcome.txt"
+
+print_usage() {
+  printf '%s\n' "Usage: senior-zero-launcher [--dry-run] [--action <browser|mail|documents|media|help|health>]"
+}
+
+resolve_command() {
+  case "$1" in
+    browser) printf '%s\n' "firefox-esr" ;;
+    mail) printf '%s\n' "thunderbird" ;;
+    documents) printf '%s\n' "libreoffice --writer" ;;
+    media) printf '%s\n' "vlc" ;;
+    help) printf '%s\n' "xdg-open $HELP_FILE" ;;
+    health) printf '%s\n' "senior-zero-health-summary" ;;
+    *) return 1 ;;
+  esac
+}
+
+print_catalog() {
+  printf '%s\n' "action_browser=firefox-esr"
+  printf '%s\n' "action_mail=thunderbird"
+  printf '%s\n' "action_documents=libreoffice --writer"
+  printf '%s\n' "action_media=vlc"
+  printf '%s\n' "action_help=xdg-open /usr/share/senior-zero/help/welcome.txt"
+  printf '%s\n' "action_health=senior-zero-health-summary"
+}
+
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN=1
+elif [[ "${1:-}" == "--action" ]]; then
+  ACTION="${2:-}"
+  if [[ -z "$ACTION" ]]; then
+    print_usage >&2
+    exit 2
+  fi
+  if [[ "${3:-}" == "--dry-run" ]]; then
+    DRY_RUN=1
+  elif [[ $# -gt 2 ]]; then
+    print_usage >&2
+    exit 2
+  fi
+elif [[ $# -gt 0 ]]; then
+  print_usage >&2
+  exit 2
+fi
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  printf '%s\n' "SENIOR_ZERO_LAUNCHER_DRY_RUN"
+  print_catalog
+  if [[ -n "$ACTION" ]]; then
+    COMMAND="$(resolve_command "$ACTION" || true)"
+    printf 'selected_action=%s\n' "$ACTION"
+    printf 'selected_command=%s\n' "$COMMAND"
+  fi
+  exit 0
+fi
+
+if [[ -z "$ACTION" ]]; then
+  printf '%s\n' "SENIOR_ZERO_LAUNCHER_ACTION_REQUIRED"
+  print_catalog
+  exit 0
+fi
+
+COMMAND="$(resolve_command "$ACTION" || true)"
+if [[ -z "$COMMAND" ]]; then
+  printf 'SENIOR_ZERO_LAUNCHER_INVALID_ACTION=%s\n' "$ACTION" >&2
+  exit 2
+fi
+
+if [[ "${SENIOR_ZERO_LAUNCHER_NO_EXEC:-0}" != "1" ]]; then
+  (bash -lc "$COMMAND" >/dev/null 2>&1 || true) &
+fi
+
+printf 'SENIOR_ZERO_LAUNCHER_ACTION_EXECUTED action=%s command=%s\n' "$ACTION" "$COMMAND"
