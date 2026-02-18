@@ -17,6 +17,7 @@ check_dry_run "senior-zero-app-center-policy" "SENIOR_ZERO_APP_CENTER_POLICY_DRY
 check_dry_run "senior-zero-acceptance-runner" "ACCEPTANCE_RUNNER_DRY_RUN"
 check_dry_run "senior-zero-install-target-smoke" "INSTALL_TARGET_SMOKE_DRY_RUN"
 check_dry_run "senior-zero-rollback-rehearsal" "ROLLBACK_REHEARSAL_DRY_RUN"
+check_dry_run "senior-zero-rollback-bootstrap" "ROLLBACK_BOOTSTRAP_DRY_RUN"
 check_dry_run "senior-zero-security-audit" "SECURITY_AUDIT_DRY_RUN"
 
 echo "E2E PASS: user-path shims forward to in-image commands"

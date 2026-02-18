@@ -1,7 +1,29 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+DRY_RUN=0
+
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN=1
+elif [[ $# -gt 0 ]]; then
+  echo "Usage: $0 [--dry-run]" >&2
+  exit 2
+fi
+
 STAMP_FILE="/var/lib/senior-zero/rollback-bootstrap.done"
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  cat <<EOF
+ROLLBACK_BOOTSTRAP_DRY_RUN
+command -v snapper >/dev/null 2>&1
+findmnt -n -o FSTYPE /
+snapper list-configs | awk 'NR>1 {print \$2}' | grep -qx '/'
+systemctl enable --now snapper-timeline.timer
+systemctl enable --now snapper-cleanup.timer
+touch $STAMP_FILE
+EOF
+  exit 0
+fi
 
 if [[ -f "$STAMP_FILE" ]]; then
   printf '%s\n' "ALREADY_DONE"
@@ -19,7 +41,7 @@ if [[ "$root_fs" != "btrfs" ]]; then
   exit 0
 fi
 
-if ! snapper list-configs | awk 'NR>1 {print $1}' | grep -qx 'root'; then
+if ! snapper list-configs | awk 'NR>1 {print $2}' | grep -qx '/'; then
   snapper create-config /
 fi
 

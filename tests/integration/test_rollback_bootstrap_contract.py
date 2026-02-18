@@ -29,7 +29,9 @@ class RollbackBootstrapContractTests(unittest.TestCase):
         ok, missing = contains_all(
             text,
             [
+                "ROLLBACK_BOOTSTRAP_DRY_RUN",
                 "findmnt -n -o FSTYPE /",
+                "awk 'NR>1 {print $2}'",
                 "snapper create-config /",
                 "systemctl enable --now snapper-timeline.timer",
                 "systemctl enable --now snapper-cleanup.timer",
