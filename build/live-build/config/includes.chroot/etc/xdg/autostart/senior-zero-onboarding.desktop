@@ -4,4 +4,5 @@ Name=Senior Zero Onboarding
 Comment=Show one-time onboarding guidance
 Exec=senior-zero-onboarding
 OnlyShowIn=LXDE;
+Terminal=false
 X-GNOME-Autostart-enabled=true
