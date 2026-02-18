@@ -2,6 +2,8 @@
 set -euo pipefail
 
 DRY_RUN=0
+EXPECTED_USER="${VM_SMOKE_USER:-user}"
+EXPECTED_UID="${VM_SMOKE_UID:-1000}"
 
 if [[ "${1:-}" == "--dry-run" ]]; then
   DRY_RUN=1
@@ -11,8 +13,8 @@ elif [[ $# -gt 0 ]]; then
 fi
 
 CHECKS=(
-  "whoami | grep -qx 'user'"
-  "id -u | grep -qx '1000'"
+  "whoami | grep -qx '${EXPECTED_USER}'"
+  "id -u | grep -qx '${EXPECTED_UID}'"
   "systemctl is-enabled unattended-upgrades | grep -qx 'enabled'"
   "systemctl is-active NetworkManager | grep -qx 'active'"
   "locale -a | grep -Eiq 'en_US.utf8'"

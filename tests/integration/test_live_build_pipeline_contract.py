@@ -125,6 +125,7 @@ class LiveBuildPipelineContractTests(unittest.TestCase):
                 "de_DE.utf8",
                 "en_US.utf8",
                 "whoami",
+                "id -u",
             ],
         )
         self.assertTrue(ok, f"Missing VM smoke checks: {missing}")
