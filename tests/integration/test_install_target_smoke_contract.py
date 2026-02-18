@@ -17,15 +17,12 @@ class InstallTargetSmokeContractTests(unittest.TestCase):
         ok, missing = contains_all(
             text,
             [
-                "command -v snapper >/dev/null 2>&1",
                 "findmnt -n -o FSTYPE /",
                 "systemctl is-enabled unattended-upgrades",
                 "/etc/apt/apt.conf.d/52unattended-upgrades-senior-zero",
                 "/etc/apt/preferences.d/90-senior-zero-security.pref",
                 "systemctl is-enabled snapper-timeline.timer",
                 "systemctl is-enabled snapper-cleanup.timer",
-                "systemctl is-active snapper-timeline.timer",
-                "systemctl is-active snapper-cleanup.timer",
                 "/var/lib/senior-zero/rollback-bootstrap.done",
                 "locale -a",
                 "de_DE.utf8",

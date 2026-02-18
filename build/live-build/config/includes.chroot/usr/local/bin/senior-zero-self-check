@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DRY_RUN=0
+RESULTS_FILE="$HOME/Documents/senior-zero-self-check.txt"
+
+print_plan() {
+  printf '%s\n' "check_preflight=senior-zero-preflight-report --dry-run"
+  printf '%s\n' "check_update_policy=senior-zero-update-check --dry-run"
+  printf '%s\n' "check_runtime_profile=senior-zero-runtime-profile --dry-run"
+  printf '%s\n' "check_diagnostics_report=senior-zero-diagnostics-report --dry-run"
+}
+
+run_check() {
+  local command_name="$1"
+  if command -v "$command_name" >/dev/null 2>&1 && "$command_name" --dry-run >/dev/null 2>&1; then
+    printf '%s\n' "pass"
+  else
+    printf '%s\n' "fail"
+  fi
+}
+
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN=1
+elif [[ $# -gt 0 ]]; then
+  echo "Usage: $0 [--dry-run]" >&2
+  exit 2
+fi
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  printf '%s\n' "SENIOR_ZERO_SELF_CHECK_DRY_RUN"
+  print_plan
+  printf 'results_file=%s\n' "$RESULTS_FILE"
+  exit 0
+fi
+
+if [[ "${SENIOR_ZERO_SELF_CHECK_FAKE:-0}" == "1" ]]; then
+  printf '%s\n' "SENIOR_ZERO_SELF_CHECK_FAKE"
+  PRECHECK_STATUS="pass"
+  UPDATE_STATUS="pass"
+  RUNTIME_STATUS="pass"
+  DIAGNOSTICS_STATUS="pass"
+else
+  PRECHECK_STATUS="$(run_check senior-zero-preflight-report)"
+  UPDATE_STATUS="$(run_check senior-zero-update-check)"
+  RUNTIME_STATUS="$(run_check senior-zero-runtime-profile)"
+  DIAGNOSTICS_STATUS="$(run_check senior-zero-diagnostics-report)"
+fi
+
+mkdir -p "$(dirname "$RESULTS_FILE")"
+cat > "$RESULTS_FILE" <<EOF
+check_preflight=$PRECHECK_STATUS
+check_update_policy=$UPDATE_STATUS
+check_runtime_profile=$RUNTIME_STATUS
+check_diagnostics_report=$DIAGNOSTICS_STATUS
+EOF
+
+printf 'SENIOR_ZERO_SELF_CHECK_RESULTS=%s\n' "$RESULTS_FILE"
+if [[ "$PRECHECK_STATUS" == "pass" && "$UPDATE_STATUS" == "pass" && "$RUNTIME_STATUS" == "pass" && "$DIAGNOSTICS_STATUS" == "pass" ]]; then
+  printf '%s\n' "SENIOR_ZERO_SELF_CHECK_OK"
+else
+  printf '%s\n' "SENIOR_ZERO_SELF_CHECK_ATTENTION"
+fi

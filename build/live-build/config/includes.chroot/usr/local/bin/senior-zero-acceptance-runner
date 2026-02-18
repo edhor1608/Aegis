@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+TARGET="/usr/local/sbin/senior-zero-acceptance-runner"
+if [[ ! -x "$TARGET" ]]; then
+  TARGET="$(cd "$(dirname "${BASH_SOURCE[0]}")/../sbin" && pwd)/senior-zero-acceptance-runner"
+fi
+
+exec "$TARGET" "$@"

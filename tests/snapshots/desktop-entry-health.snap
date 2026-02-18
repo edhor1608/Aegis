@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Senior Zero Health
+Comment=Run a simple health check
+Exec=lxterminal -e senior-zero-preflight-report
+Icon=utilities-system-monitor
+Terminal=false
+Categories=Utility;

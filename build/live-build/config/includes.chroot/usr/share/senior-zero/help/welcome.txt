@@ -1,0 +1,12 @@
+Senior Zero Linux
+=================
+
+Quick start:
+- Browser: open the web safely with Firefox ESR.
+- Documents: open and edit files with LibreOffice.
+- Health: run a simple system check.
+
+Language baseline:
+- Default: EN (English)
+- Alternative: DE (Deutsch)
+- DE/EN switching is available in baseline.
