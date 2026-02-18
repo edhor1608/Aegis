@@ -38,8 +38,8 @@ check() {
 
 check "networkmanager_active" systemctl is-active --quiet NetworkManager
 check "unattended_upgrades_enabled" systemctl is-enabled --quiet unattended-upgrades
-check "locale_en_us_present" bash -lc "locale -a | grep -Eiq '^en_US\\.utf8$'"
-check "locale_de_de_present" bash -lc "locale -a | grep -Eiq '^de_DE\\.utf8$'"
+check "locale_en_us_present" bash -lc "locale -a | grep -Eiq '^en_US[._-]utf-?8$'"
+check "locale_de_de_present" bash -lc "locale -a | grep -Eiq '^de_DE[._-]utf-?8$'"
 check "snapper_available" command -v snapper
 check "btrfs_available" command -v btrfs
 
