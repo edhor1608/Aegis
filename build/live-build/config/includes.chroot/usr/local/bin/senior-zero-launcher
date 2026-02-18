@@ -26,28 +26,30 @@ print_catalog() {
   printf '%s\n' "action_mail=thunderbird"
   printf '%s\n' "action_documents=libreoffice --writer"
   printf '%s\n' "action_media=vlc"
-  printf '%s\n' "action_help=xdg-open /usr/share/senior-zero/help/welcome.txt"
+  printf '%s\n' "action_help=xdg-open $HELP_FILE"
   printf '%s\n' "action_health=senior-zero-health-summary"
 }
 
-if [[ "${1:-}" == "--dry-run" ]]; then
-  DRY_RUN=1
-elif [[ "${1:-}" == "--action" ]]; then
-  ACTION="${2:-}"
-  if [[ -z "$ACTION" ]]; then
-    print_usage >&2
-    exit 2
-  fi
-  if [[ "${3:-}" == "--dry-run" ]]; then
-    DRY_RUN=1
-  elif [[ $# -gt 2 ]]; then
-    print_usage >&2
-    exit 2
-  fi
-elif [[ $# -gt 0 ]]; then
-  print_usage >&2
-  exit 2
-fi
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --dry-run)
+      DRY_RUN=1
+      shift
+      ;;
+    --action)
+      ACTION="${2:-}"
+      if [[ -z "$ACTION" ]]; then
+        print_usage >&2
+        exit 2
+      fi
+      shift 2
+      ;;
+    *)
+      print_usage >&2
+      exit 2
+      ;;
+  esac
+done
 
 if [[ "$DRY_RUN" -eq 1 ]]; then
   printf '%s\n' "SENIOR_ZERO_LAUNCHER_DRY_RUN"
@@ -63,6 +65,10 @@ fi
 if [[ -z "$ACTION" ]]; then
   printf '%s\n' "SENIOR_ZERO_LAUNCHER_ACTION_REQUIRED"
   print_catalog
+  if [[ -t 0 ]]; then
+    printf '%s' "Press Enter to close..."
+    read -r _
+  fi
   exit 0
 fi
 
@@ -73,7 +79,14 @@ if [[ -z "$COMMAND" ]]; then
 fi
 
 if [[ "${SENIOR_ZERO_LAUNCHER_NO_EXEC:-0}" != "1" ]]; then
-  (bash -lc "$COMMAND" >/dev/null 2>&1 || true) &
+  if [[ "${SENIOR_ZERO_LAUNCHER_DEBUG:-0}" == "1" ]]; then
+    (bash -c "$COMMAND" || true) &
+  else
+    LOG_DIR="${HOME:-/tmp}/.local/share/senior-zero"
+    LOG_FILE="$LOG_DIR/launcher.log"
+    mkdir -p "$LOG_DIR"
+    (bash -c "$COMMAND" >>"$LOG_FILE" 2>&1 || true) &
+  fi
 fi
 
 printf 'SENIOR_ZERO_LAUNCHER_ACTION_EXECUTED action=%s command=%s\n' "$ACTION" "$COMMAND"

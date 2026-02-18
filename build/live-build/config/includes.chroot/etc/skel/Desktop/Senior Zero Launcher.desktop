@@ -3,5 +3,6 @@ Type=Application
 Name=Senior Zero Launcher
 Comment=Open the simplified Senior Zero launcher
 Exec=lxterminal -e senior-zero-launcher
+Icon=utilities-terminal
 Terminal=false
 Categories=Utility;

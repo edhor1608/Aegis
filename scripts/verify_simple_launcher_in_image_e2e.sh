@@ -10,6 +10,9 @@ echo "$DRY_OUTPUT" | grep -q "SENIOR_ZERO_LAUNCHER_DRY_RUN"
 echo "$DRY_OUTPUT" | grep -q "action_browser=firefox-esr"
 echo "$DRY_OUTPUT" | grep -q "action_help=xdg-open /usr/share/senior-zero/help/welcome.txt"
 
+ORDER_OUTPUT="$(bash "$SCRIPT" --dry-run --action help)"
+echo "$ORDER_OUTPUT" | grep -q "selected_action=help"
+
 RUN_OUTPUT="$(SENIOR_ZERO_LAUNCHER_NO_EXEC=1 bash "$SCRIPT" --action help)"
 echo "$RUN_OUTPUT" | grep -q "SENIOR_ZERO_LAUNCHER_ACTION_EXECUTED"
 
