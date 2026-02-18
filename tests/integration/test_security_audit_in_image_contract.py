@@ -32,8 +32,10 @@ class SecurityAuditInImageContractTests(unittest.TestCase):
                 "/etc/apt/apt.conf.d/52unattended-upgrades-senior-zero",
                 "/etc/apt/preferences.d/90-senior-zero-security.pref",
                 "Allowed-Origins",
+                "security",
                 "Pin-Priority: 990",
                 "Pin-Priority: 500",
+                "Automatic-Reboot",
                 "SECURITY_AUDIT_PASS",
             ],
         )
