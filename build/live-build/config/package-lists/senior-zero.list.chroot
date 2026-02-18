@@ -1,7 +1,7 @@
 linux-image-amd64
 live-boot
 live-config
-task-lxde-desktop
+task-lxqt-desktop
 network-manager
 snapper
 grub-btrfs

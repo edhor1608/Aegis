@@ -48,7 +48,7 @@ class LiveBuildPipelineContractTests(unittest.TestCase):
                 "grub-btrfs",
                 "unattended-upgrades",
                 "apt-listchanges",
-                "task-lxde-desktop",
+                "task-lxqt-desktop",
             ],
         )
         self.assertTrue(ok, f"Missing package baseline entries: {missing}")
