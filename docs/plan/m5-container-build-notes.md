@@ -2,7 +2,7 @@
 
 ## Problem
 
-macOS host does not provide native `live-build`, and direct bind-mounted Docker execution failed due architecture and filesystem constraints.
+macOS host does not provide native `live-build`, and direct bind-mounted Docker execution failed due to architecture and filesystem constraints.
 
 ## What Was Added
 
