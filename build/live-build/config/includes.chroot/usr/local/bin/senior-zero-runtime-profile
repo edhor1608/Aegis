@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DRY_RUN=0
+BASELINE_RAM_MB=4096
+TARGET_CPU_CLASS="i3_legacy"
+BASELINE_RAM_LABEL="baseline_ram_mb=4096"
+TARGET_CPU_CLASS_LABEL="target_cpu_class=i3_legacy"
+
+usage() {
+  printf '%s\n' "Usage: senior-zero-runtime-profile [--dry-run]"
+}
+
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN=1
+elif [[ $# -gt 0 ]]; then
+  usage >&2
+  exit 2
+fi
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  printf '%s\n' "SENIOR_ZERO_RUNTIME_PROFILE_DRY_RUN"
+  printf '%s\n' "$BASELINE_RAM_LABEL"
+  printf '%s\n' "$TARGET_CPU_CLASS_LABEL"
+  printf '%s\n' "boot_time_seconds=<runtime>"
+  printf '%s\n' "memory_total_mb=<runtime>"
+  printf '%s\n' "memory_used_mb=<runtime>"
+  printf '%s\n' "memory_available_mb=<runtime>"
+  printf '%s\n' "cpu_model=<runtime>"
+  exit 0
+fi
+
+if [[ "${SENIOR_ZERO_RUNTIME_PROFILE_FAKE:-0}" == "1" ]]; then
+  BOOT_TIME_SECONDS="18.2"
+  MEMORY_TOTAL_MB="4096"
+  MEMORY_USED_MB="620"
+  MEMORY_AVAILABLE_MB="3476"
+  CPU_MODEL="Intel Core i3 (sample)"
+else
+  BOOT_TIME_SECONDS="$(systemd-analyze time 2>/dev/null | awk -F'= ' '/finished/ {split($2, a, "s"); gsub(/ /, "", a[1]); print a[1]; exit}')"
+  MEMORY_TOTAL_MB="$(free -m | awk '/^Mem:/ {print $2}')"
+  MEMORY_USED_MB="$(free -m | awk '/^Mem:/ {print $3}')"
+  MEMORY_AVAILABLE_MB="$(free -m | awk '/^Mem:/ {print $7}')"
+  CPU_MODEL="$(awk -F: '/model name/ {sub(/^ +/, "", $2); print $2; exit}' /proc/cpuinfo 2>/dev/null || true)"
+fi
+
+BOOT_TIME_SECONDS="${BOOT_TIME_SECONDS:-unknown}"
+MEMORY_TOTAL_MB="${MEMORY_TOTAL_MB:-0}"
+MEMORY_USED_MB="${MEMORY_USED_MB:-unknown}"
+MEMORY_AVAILABLE_MB="${MEMORY_AVAILABLE_MB:-unknown}"
+CPU_MODEL="${CPU_MODEL:-unknown}"
+
+printf '%s\n' "$BASELINE_RAM_LABEL"
+printf '%s\n' "$TARGET_CPU_CLASS_LABEL"
+printf 'boot_time_seconds=%s\n' "$BOOT_TIME_SECONDS"
+printf 'memory_total_mb=%s\n' "$MEMORY_TOTAL_MB"
+printf 'memory_used_mb=%s\n' "$MEMORY_USED_MB"
+printf 'memory_available_mb=%s\n' "$MEMORY_AVAILABLE_MB"
+printf 'cpu_model=%s\n' "$CPU_MODEL"
+
+if [[ "$MEMORY_TOTAL_MB" =~ ^[0-9]+$ ]] && [[ "$MEMORY_TOTAL_MB" -ge "$BASELINE_RAM_MB" ]]; then
+  printf '%s\n' "SENIOR_ZERO_RUNTIME_PROFILE_OK"
+else
+  printf '%s\n' "SENIOR_ZERO_RUNTIME_PROFILE_WARN"
+fi

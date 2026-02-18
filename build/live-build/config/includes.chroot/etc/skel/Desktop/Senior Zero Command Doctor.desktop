@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Senior Zero Command Doctor
+Comment=Verify command readiness for support helpers
+Exec=lxterminal -e senior-zero-command-doctor
+Terminal=false
+Categories=Utility;

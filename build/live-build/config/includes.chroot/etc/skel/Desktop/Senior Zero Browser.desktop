@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Senior Zero Browser
+Comment=Open the internet browser
+Exec=firefox-esr
+Icon=firefox-esr
+Terminal=false
+Categories=Network;WebBrowser;

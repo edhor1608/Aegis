@@ -3,6 +3,12 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
+check_contains() {
+  local pattern="$1"
+  local file="$2"
+  grep -q "$pattern" "$file" || { echo "E2E FAIL: missing '$pattern' in $file"; exit 1; }
+}
+
 required_files=(
   "$ROOT_DIR/docs/architecture/system-model.md"
   "$ROOT_DIR/docs/architecture/update-and-rollback.md"
@@ -16,12 +22,12 @@ for file in "${required_files[@]}"; do
   fi
 done
 
-grep -q "Debian Stable" "$ROOT_DIR/docs/architecture/system-model.md"
-grep -q "snapper" "$ROOT_DIR/docs/architecture/update-and-rollback.md"
-grep -q "grub-btrfs" "$ROOT_DIR/docs/architecture/update-and-rollback.md"
-grep -q "unattended-upgrades" "$ROOT_DIR/docs/architecture/update-and-rollback.md"
-grep -q "apt pinning" "$ROOT_DIR/docs/architecture/update-and-rollback.md"
-grep -q "Curated default catalog" "$ROOT_DIR/docs/architecture/app-center-policy.md"
-grep -q "More Apps" "$ROOT_DIR/docs/architecture/app-center-policy.md"
+check_contains "Debian Stable" "$ROOT_DIR/docs/architecture/system-model.md"
+check_contains "snapper" "$ROOT_DIR/docs/architecture/update-and-rollback.md"
+check_contains "grub-btrfs" "$ROOT_DIR/docs/architecture/update-and-rollback.md"
+check_contains "unattended-upgrades" "$ROOT_DIR/docs/architecture/update-and-rollback.md"
+check_contains "apt pinning" "$ROOT_DIR/docs/architecture/update-and-rollback.md"
+check_contains "Curated default catalog" "$ROOT_DIR/docs/architecture/app-center-policy.md"
+check_contains "More Apps" "$ROOT_DIR/docs/architecture/app-center-policy.md"
 
 echo "E2E PASS: architecture baseline is coherent"

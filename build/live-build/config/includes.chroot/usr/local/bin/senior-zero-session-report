@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DRY_RUN=0
+OUTPUT_FILE="$HOME/Documents/senior-zero-session-report.txt"
+
+print_plan() {
+  printf '%s\n' "planned_sections=update_check,network_check,storage_check,runtime_profile,self_check"
+}
+
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN=1
+elif [[ $# -gt 0 ]]; then
+  echo "Usage: $0 [--dry-run]" >&2
+  exit 2
+fi
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  printf '%s\n' "SENIOR_ZERO_SESSION_REPORT_DRY_RUN"
+  print_plan
+  printf 'output_file=%s\n' "$OUTPUT_FILE"
+  exit 0
+fi
+
+if [[ "${SENIOR_ZERO_SESSION_REPORT_FAKE:-0}" == "1" ]]; then
+  printf '%s\n' "SENIOR_ZERO_SESSION_REPORT_FAKE"
+  UPDATE_STATUS="ready"
+  NETWORK_STATUS="ready"
+  STORAGE_STATUS="ready"
+  RUNTIME_STATUS="ready"
+  SELF_CHECK_STATUS="ready"
+else
+  if command -v senior-zero-update-check >/dev/null 2>&1; then UPDATE_STATUS="ready"; else UPDATE_STATUS="missing"; fi
+  if command -v senior-zero-network-check >/dev/null 2>&1; then NETWORK_STATUS="ready"; else NETWORK_STATUS="missing"; fi
+  if command -v senior-zero-storage-check >/dev/null 2>&1; then STORAGE_STATUS="ready"; else STORAGE_STATUS="missing"; fi
+  if command -v senior-zero-runtime-profile >/dev/null 2>&1; then RUNTIME_STATUS="ready"; else RUNTIME_STATUS="missing"; fi
+  if command -v senior-zero-self-check >/dev/null 2>&1; then SELF_CHECK_STATUS="ready"; else SELF_CHECK_STATUS="missing"; fi
+fi
+
+mkdir -p "$(dirname "$OUTPUT_FILE")"
+cat > "$OUTPUT_FILE" <<EOF
+section_update_check=$UPDATE_STATUS
+section_network_check=$NETWORK_STATUS
+section_storage_check=$STORAGE_STATUS
+section_runtime_profile=$RUNTIME_STATUS
+section_self_check=$SELF_CHECK_STATUS
+EOF
+
+printf 'SENIOR_ZERO_SESSION_REPORT_WRITTEN=%s\n' "$OUTPUT_FILE"
+if [[ "$UPDATE_STATUS" == "ready" && "$NETWORK_STATUS" == "ready" && "$STORAGE_STATUS" == "ready" && "$RUNTIME_STATUS" == "ready" && "$SELF_CHECK_STATUS" == "ready" ]]; then
+  printf '%s\n' "SENIOR_ZERO_SESSION_REPORT_READY"
+else
+  printf '%s\n' "SENIOR_ZERO_SESSION_REPORT_PARTIAL"
+fi

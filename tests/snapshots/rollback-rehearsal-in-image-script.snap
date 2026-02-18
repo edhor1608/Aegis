@@ -41,7 +41,7 @@ if ! snapper list-configs | awk 'NR>1 {print $1}' | grep -qx 'root'; then
   exit 1
 fi
 
-tag="senior-zero-rehearsal-$(date +%Y%m%d%H%M%S)-$$"
+tag="senior-zero-rehearsal-$(date +%Y%m%d%H%M%S)"
 snap_id="$(snapper -c root create --print-number -d "$tag")"
 if [[ -z "$snap_id" ]]; then
   printf '%s\n' "FAIL: snapshot creation returned empty id" >&2
