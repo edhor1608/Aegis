@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DRY_RUN=0
+CURATED_FILE="/etc/senior-zero/app-center/curated-default-packages.txt"
+WARNING_FILE="/etc/senior-zero/app-center/more-apps-warning.txt"
+
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN=1
+elif [[ $# -gt 0 ]]; then
+  echo "Usage: $0 [--dry-run]" >&2
+  exit 2
+fi
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  cat <<'EOF'
+SENIOR_ZERO_APP_CENTER_POLICY_DRY_RUN
+/etc/senior-zero/app-center/curated-default-packages.txt
+/etc/senior-zero/app-center/more-apps-warning.txt
+firefox-esr
+thunderbird
+libreoffice
+vlc
+EOF
+  exit 0
+fi
+
+for required in "$CURATED_FILE" "$WARNING_FILE"; do
+  if [[ ! -s "$required" ]]; then
+    printf 'FAIL: missing required file %s\n' "$required" >&2
+    exit 1
+  fi
+done
+
+for pkg in firefox-esr thunderbird libreoffice vlc; do
+  if ! grep -Eq "^${pkg}([[:space:]]|$)" "$CURATED_FILE"; then
+    printf 'FAIL: curated app missing %s\n' "$pkg" >&2
+    exit 1
+  fi
+done
+
+printf '%s\n' "CURATED_DEFAULT_APPS:"
+cat "$CURATED_FILE"
+printf '\n%s\n' "MORE_APPS_WARNING:"
+cat "$WARNING_FILE"
+printf '\n%s\n' "SENIOR_ZERO_APP_CENTER_POLICY_PASS"

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+STAMP_FILE="/var/lib/senior-zero/rollback-bootstrap.done"
+
+if [[ -f "$STAMP_FILE" ]]; then
+  printf '%s\n' "ALREADY_DONE"
+  exit 0
+fi
+
+if ! command -v snapper >/dev/null 2>&1; then
+  printf '%s\n' "ERROR: snapper missing" >&2
+  exit 1
+fi
+
+root_fs="$(findmnt -n -o FSTYPE /)"
+if [[ "$root_fs" != "btrfs" ]]; then
+  printf '%s\n' "NOT_APPLICABLE: rollback bootstrap requires installed btrfs root"
+  exit 0
+fi
+
+if ! snapper list-configs | awk 'NR>1 {print $1}' | grep -qx 'root'; then
+  snapper create-config /
+fi
+
+systemctl enable --now snapper-timeline.timer
+systemctl enable --now snapper-cleanup.timer
+
+mkdir -p "$(dirname "$STAMP_FILE")"
+touch "$STAMP_FILE"
+
+printf '%s\n' "BOOTSTRAP_PASS"

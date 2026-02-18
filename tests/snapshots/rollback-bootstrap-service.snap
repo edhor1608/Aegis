@@ -1,0 +1,11 @@
+[Unit]
+Description=Senior Zero rollback bootstrap
+After=local-fs.target
+ConditionPathExists=!/var/lib/senior-zero/rollback-bootstrap.done
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/senior-zero-rollback-bootstrap
+
+[Install]
+WantedBy=multi-user.target

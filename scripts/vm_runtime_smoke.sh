@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DRY_RUN=0
+
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN=1
+elif [[ $# -gt 0 ]]; then
+  echo "Usage: $0 [--dry-run]" >&2
+  exit 2
+fi
+
+CHECKS=(
+  "whoami | grep -qx 'user'"
+  "id -u | grep -qx '1000'"
+  "systemctl is-enabled unattended-upgrades | grep -qx 'enabled'"
+  "systemctl is-active NetworkManager | grep -qx 'active'"
+  "locale -a | grep -Eiq 'en_US.utf8'"
+  "locale -a | grep -Eiq 'de_DE.utf8'"
+  "command -v senior-zero-preflight-report >/dev/null"
+  "command -v senior-zero-app-center-policy >/dev/null"
+  "senior-zero-acceptance-runner --dry-run | grep -q 'ACCEPTANCE_RUNNER_DRY_RUN'"
+  "command -v senior-zero-support-bundle >/dev/null"
+  "command -v senior-zero-daily-checklist >/dev/null"
+  "command -v senior-zero-command-doctor >/dev/null"
+  "senior-zero-command-index --dry-run | grep -q 'senior-zero-command-doctor'"
+  "senior-zero-launcher --dry-run | grep -q 'action_acceptance=senior-zero-acceptance-runner --dry-run'"
+)
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  printf '%s\n' "VM_SMOKE_DRY_RUN"
+  printf '%s\n' "${CHECKS[@]}"
+  exit 0
+fi
+
+for check_cmd in "${CHECKS[@]}"; do
+  if bash -lc "$check_cmd"; then
+    printf 'PASS: %s\n' "$check_cmd"
+  else
+    printf 'FAIL: %s\n' "$check_cmd" >&2
+    exit 1
+  fi
+done
+
+printf '%s\n' "VM_SMOKE_PASS"

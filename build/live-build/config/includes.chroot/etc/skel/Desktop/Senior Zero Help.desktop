@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Senior Zero Help
+Comment=Read the quick start help text
+Exec=lxterminal -e less /usr/share/senior-zero/help/welcome.txt
+Icon=help-browser
+Terminal=false
+Categories=Utility;

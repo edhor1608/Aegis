@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Senior Zero Diagnostics Report
+Comment=Generate a local diagnostics report file
+Exec=lxterminal -e senior-zero-diagnostics-report
+Terminal=false
+Categories=System;

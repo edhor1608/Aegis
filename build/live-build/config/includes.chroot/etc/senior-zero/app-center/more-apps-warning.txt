@@ -1,0 +1,2 @@
+curated default apps are shown first for safety and simplicity.
+More Apps is available with a warning before installation.
