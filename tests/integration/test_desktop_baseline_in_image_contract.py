@@ -43,7 +43,11 @@ class DesktopBaselineInImageContractTests(unittest.TestCase):
     def test_desktop_entries_have_expected_execs(self) -> None:
         failures = []
         for filename, expected_entries in DESKTOP_FILES.items():
-            text = read_text(DESKTOP_DIR / filename)
+            path = DESKTOP_DIR / filename
+            if not path.exists():
+                failures.append((filename, ["missing file"]))
+                continue
+            text = read_text(path)
             ok, missing = contains_all(text, expected_entries)
             if not ok:
                 failures.append((filename, missing))

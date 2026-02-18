@@ -3,6 +3,8 @@ live-boot
 live-config
 user-setup
 task-lxde-desktop
+lxterminal
+less
 network-manager
 snapper
 btrfs-progs
