@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Senior Zero Network Check
+Comment=Check network readiness quickly
+Exec=lxterminal -e senior-zero-network-check
+Terminal=false
+Categories=System;

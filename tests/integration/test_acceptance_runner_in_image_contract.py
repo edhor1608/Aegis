@@ -33,6 +33,9 @@ class AcceptanceRunnerInImageContractTests(unittest.TestCase):
                 "/usr/local/sbin/senior-zero-rollback-rehearsal",
                 "/usr/local/sbin/senior-zero-preflight-report",
                 "/usr/local/sbin/senior-zero-app-center-policy",
+                "/usr/local/bin/senior-zero-support-bundle",
+                "/usr/local/bin/senior-zero-daily-checklist",
+                "/usr/local/bin/senior-zero-command-doctor",
                 "ACCEPTANCE_RUNNER_PASS",
             ],
         )

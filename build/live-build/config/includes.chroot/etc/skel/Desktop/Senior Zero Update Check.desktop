@@ -3,6 +3,5 @@ Type=Application
 Name=Senior Zero Update Check
 Comment=Check security update policy status
 Exec=lxterminal -e senior-zero-update-check
-Icon=system-software-update
 Terminal=false
 Categories=System;

@@ -4,7 +4,7 @@
 
 - zero-config behavior as priority 1 for all default user paths.
 - Debian Stable base with predictable long-term maintenance.
-- Stable and low-noise operation on old i3 class hardware with 4 GB RAM.
+- Stable and low-noise operation on old i3-class hardware with 4 GB RAM.
 
 ## System Layers
 
@@ -38,5 +38,5 @@
 
 ## Hardware Baseline
 
-- Target baseline: old Intel i3 class CPU, 4 GB RAM, 64+ GB storage.
+- Target baseline: old Intel i3-class CPU, 4 GB RAM, 64+ GB storage.
 - USB peripherals should work out of the box for common keyboard, mouse, storage, webcam, and headset devices.
