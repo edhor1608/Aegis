@@ -12,12 +12,14 @@ fi
 
 CHECKS=(
   "command -v snapper >/dev/null 2>&1"
-  "findmnt -n -o FSTYPE /"
+  "findmnt -n -o FSTYPE / | grep -qx 'btrfs'"
   "systemctl is-enabled unattended-upgrades | grep -qx 'enabled'"
   "test -f /etc/apt/apt.conf.d/52unattended-upgrades-senior-zero"
   "test -f /etc/apt/preferences.d/90-senior-zero-security.pref"
   "systemctl is-enabled snapper-timeline.timer | grep -qx 'enabled'"
   "systemctl is-enabled snapper-cleanup.timer | grep -qx 'enabled'"
+  "systemctl is-active snapper-timeline.timer | grep -qx 'active'"
+  "systemctl is-active snapper-cleanup.timer | grep -qx 'active'"
   "test -f /var/lib/senior-zero/rollback-bootstrap.done"
   "locale -a | grep -Eiq 'de_DE.utf8'"
   "locale -a | grep -Eiq 'en_US.utf8'"
@@ -30,7 +32,7 @@ if [[ "$DRY_RUN" -eq 1 ]]; then
 fi
 
 for check_cmd in "${CHECKS[@]}"; do
-  if bash -lc "$check_cmd"; then
+  if bash -c "$check_cmd"; then
     printf 'PASS: %s\n' "$check_cmd"
   else
     printf 'FAIL: %s\n' "$check_cmd" >&2
@@ -40,29 +42,11 @@ done
 
 root_fs="$(findmnt -n -o FSTYPE /)"
 printf 'INFO: root filesystem: %s\n' "$root_fs"
-if [[ "$root_fs" != "btrfs" ]]; then
-  printf '%s\n' "FAIL: expected btrfs root for rollback-capable install" >&2
-  exit 1
-fi
 
-if snapper list-configs | awk 'NR>1 {print $1}' | grep -qx 'root'; then
+if snapper list-configs | awk 'NR>1 {print $2}' | grep -qx '/'; then
   printf '%s\n' "PASS: snapper root config present"
 else
   printf '%s\n' "FAIL: snapper root config missing" >&2
-  exit 1
-fi
-
-if systemctl is-active snapper-timeline.timer | grep -qx 'active'; then
-  printf '%s\n' "PASS: snapper-timeline.timer active"
-else
-  printf '%s\n' "FAIL: snapper-timeline.timer inactive" >&2
-  exit 1
-fi
-
-if systemctl is-active snapper-cleanup.timer | grep -qx 'active'; then
-  printf '%s\n' "PASS: snapper-cleanup.timer active"
-else
-  printf '%s\n' "FAIL: snapper-cleanup.timer inactive" >&2
   exit 1
 fi
 

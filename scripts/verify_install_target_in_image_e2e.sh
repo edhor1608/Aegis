@@ -6,6 +6,7 @@ SCRIPT="$ROOT_DIR/build/live-build/config/includes.chroot/usr/local/sbin/senior-
 OUTPUT="$(bash "$SCRIPT" --dry-run)"
 
 echo "$OUTPUT" | grep -q "INSTALL_TARGET_SMOKE_DRY_RUN"
+echo "$OUTPUT" | grep -q "command -v snapper"
 echo "$OUTPUT" | grep -q "findmnt -n -o FSTYPE /"
 echo "$OUTPUT" | grep -q "systemctl is-enabled unattended-upgrades"
 echo "$OUTPUT" | grep -q "/etc/apt/apt.conf.d/52unattended-upgrades-senior-zero"

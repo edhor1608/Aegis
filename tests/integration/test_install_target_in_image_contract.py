@@ -28,7 +28,9 @@ class InstallTargetInImageContractTests(unittest.TestCase):
             text,
             [
                 "INSTALL_TARGET_SMOKE_DRY_RUN",
+                "command -v snapper",
                 "findmnt -n -o FSTYPE /",
+                "systemctl is-enabled unattended-upgrades",
                 "/etc/apt/apt.conf.d/52unattended-upgrades-senior-zero",
                 "/etc/apt/preferences.d/90-senior-zero-security.pref",
                 "snapper-timeline.timer",
