@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DRY_RUN=0
+
+print_plan() {
+  printf '%s\n' "planned_commands=senior-zero-preflight-report,senior-zero-update-check,senior-zero-runtime-profile,senior-zero-network-check,senior-zero-storage-check,senior-zero-self-check"
+}
+
+check_availability() {
+  local command_name="$1"
+  if command -v "$command_name" >/dev/null 2>&1; then
+    printf '%s\n' "available"
+  else
+    printf '%s\n' "missing"
+  fi
+}
+
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN=1
+elif [[ $# -gt 0 ]]; then
+  echo "Usage: $0 [--dry-run]" >&2
+  exit 2
+fi
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  printf '%s\n' "SENIOR_ZERO_COMMAND_INDEX_DRY_RUN"
+  print_plan
+  exit 0
+fi
+
+if [[ "${SENIOR_ZERO_COMMAND_INDEX_FAKE:-0}" == "1" ]]; then
+  printf '%s\n' "SENIOR_ZERO_COMMAND_INDEX_FAKE"
+  PREFLIGHT_STATUS="available"
+  UPDATE_STATUS="available"
+  RUNTIME_STATUS="available"
+  NETWORK_STATUS="available"
+  STORAGE_STATUS="available"
+  SELF_CHECK_STATUS="available"
+else
+  PREFLIGHT_STATUS="$(check_availability senior-zero-preflight-report)"
+  UPDATE_STATUS="$(check_availability senior-zero-update-check)"
+  RUNTIME_STATUS="$(check_availability senior-zero-runtime-profile)"
+  NETWORK_STATUS="$(check_availability senior-zero-network-check)"
+  STORAGE_STATUS="$(check_availability senior-zero-storage-check)"
+  SELF_CHECK_STATUS="$(check_availability senior-zero-self-check)"
+fi
+
+printf 'cmd_preflight_report=%s\n' "$PREFLIGHT_STATUS"
+printf 'cmd_update_check=%s\n' "$UPDATE_STATUS"
+printf 'cmd_runtime_profile=%s\n' "$RUNTIME_STATUS"
+printf 'cmd_network_check=%s\n' "$NETWORK_STATUS"
+printf 'cmd_storage_check=%s\n' "$STORAGE_STATUS"
+printf 'cmd_self_check=%s\n' "$SELF_CHECK_STATUS"
+
+if [[ "$PREFLIGHT_STATUS" == "available" && "$UPDATE_STATUS" == "available" && "$RUNTIME_STATUS" == "available" && "$NETWORK_STATUS" == "available" && "$STORAGE_STATUS" == "available" && "$SELF_CHECK_STATUS" == "available" ]]; then
+  printf '%s\n' "SENIOR_ZERO_COMMAND_INDEX_READY"
+else
+  printf '%s\n' "SENIOR_ZERO_COMMAND_INDEX_PARTIAL"
+fi

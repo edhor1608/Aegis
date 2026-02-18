@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Senior Zero Command Index
+Comment=List availability of core Senior Zero commands
+Exec=lxterminal -e senior-zero-command-index
+Terminal=false
+Categories=System;
