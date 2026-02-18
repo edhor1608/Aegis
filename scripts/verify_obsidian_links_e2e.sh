@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DEFAULT_NOTES_FILE="/Users/jonas/Library/Mobile Documents/iCloud~md~obsidian/Documents/Coding/Projekte/P18 Senior Zero Linux/docs/notes.md"
-DEFAULT_WORKSPACE_ROOT="/Users/jonas/repos/senior-zero-linux"
+DEFAULT_NOTES_FILE="${HOME}/Library/Mobile Documents/iCloud~md~obsidian/Documents/Coding/Projekte/P18 Senior Zero Linux/docs/notes.md"
+DEFAULT_WORKSPACE_ROOT="${HOME}/repos/senior-zero-linux"
 NOTES_FILE="${OBSIDIAN_NOTES_PATH:-$DEFAULT_NOTES_FILE}"
 WORKSPACE_ROOT="${SENIOR_ZERO_WORKSPACE_ROOT:-$DEFAULT_WORKSPACE_ROOT}"
 

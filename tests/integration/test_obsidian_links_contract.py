@@ -6,9 +6,12 @@ from tests.lib.markdown_checks import contains_all, read_text
 
 
 DEFAULT_NOTES_PATH = (
-    "/Users/jonas/Library/Mobile Documents/iCloud~md~obsidian/Documents/Coding/Projekte/P18 Senior Zero Linux/docs/notes.md"
+    str(
+        Path.home()
+        / "Library/Mobile Documents/iCloud~md~obsidian/Documents/Coding/Projekte/P18 Senior Zero Linux/docs/notes.md"
+    )
 )
-DEFAULT_WORKSPACE_ROOT = "/Users/jonas/repos/senior-zero-linux"
+DEFAULT_WORKSPACE_ROOT = str(Path.home() / "repos/senior-zero-linux")
 OBSIDIAN_NOTES = Path(os.environ.get("OBSIDIAN_NOTES_PATH", DEFAULT_NOTES_PATH))
 WORKSPACE_ROOT = Path(os.environ.get("SENIOR_ZERO_WORKSPACE_ROOT", DEFAULT_WORKSPACE_ROOT))
 
