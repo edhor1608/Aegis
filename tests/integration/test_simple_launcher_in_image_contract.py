@@ -46,6 +46,7 @@ class SimpleLauncherInImageContractTests(unittest.TestCase):
                 "action_media=vlc",
                 "action_help=xdg-open /usr/share/senior-zero/help/welcome.txt",
                 "action_health=senior-zero-health-summary",
+                "action_acceptance=senior-zero-acceptance-runner --dry-run",
                 "SENIOR_ZERO_LAUNCHER_INVALID_ACTION",
                 "SENIOR_ZERO_LAUNCHER_ACTION_EXECUTED",
             ],
