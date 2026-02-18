@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Senior Zero Onboarding
+Comment=Show one-time onboarding guidance
+Exec=senior-zero-onboarding
+OnlyShowIn=LXDE;
+X-GNOME-Autostart-enabled=true

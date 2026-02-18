@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+TARGET=""
+PRINT_CURRENT=0
+DRY_RUN=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --to)
+      TARGET="${2:-}"
+      shift 2
+      ;;
+    --print-current)
+      PRINT_CURRENT=1
+      shift
+      ;;
+    --dry-run)
+      DRY_RUN=1
+      shift
+      ;;
+    *)
+      echo "Usage: $0 [--to en|de] [--print-current] [--dry-run]" >&2
+      exit 2
+      ;;
+  esac
+done
+
+if [[ -n "$TARGET" && "$PRINT_CURRENT" -eq 1 ]]; then
+  echo "Use either --to or --print-current" >&2
+  exit 2
+fi
+
+if [[ -z "$TARGET" && "$PRINT_CURRENT" -eq 0 ]]; then
+  echo "Usage: $0 [--to en|de] [--print-current] [--dry-run]" >&2
+  exit 2
+fi
+
+lang_for_target() {
+  case "$1" in
+    en)
+      printf '%s' "en_US.UTF-8"
+      ;;
+    de)
+      printf '%s' "de_DE.UTF-8"
+      ;;
+    *)
+      echo "Unsupported target '$1', use --to en or --to de" >&2
+      exit 2
+      ;;
+  esac
+}
+
+if [[ "$PRINT_CURRENT" -eq 1 ]]; then
+  current="${LANG:-en_US.UTF-8}"
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    printf '%s\n' "SENIOR_ZERO_LANGUAGE_SWITCH_DRY_RUN"
+    printf 'CURRENT_LANG=%s\n' "$current"
+    exit 0
+  fi
+  printf 'CURRENT_LANG=%s\n' "$current"
+  exit 0
+fi
+
+target_lang="$(lang_for_target "$TARGET")"
+target_language="${target_lang%%.*}"
+xsessionrc="$HOME/.xsessionrc"
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  printf '%s\n' "SENIOR_ZERO_LANGUAGE_SWITCH_DRY_RUN"
+  printf 'TARGET=%s\n' "$TARGET"
+  printf 'LANG=%s\n' "$target_lang"
+  printf 'LANGUAGE=%s\n' "$target_language"
+  printf 'XSESSIONRC=%s\n' "$xsessionrc"
+  exit 0
+fi
+
+mkdir -p "$(dirname "$xsessionrc")"
+cat > "$xsessionrc" <<EOF
+export LANG=$target_lang
+export LANGUAGE=$target_language
+EOF
+
+printf 'SENIOR_ZERO_LANGUAGE_SWITCH_APPLIED: LANG=%s\n' "$target_lang"
+printf '%s\n' "RELOGIN_REQUIRED"
