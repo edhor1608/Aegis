@@ -128,6 +128,12 @@ class LiveBuildPipelineContractTests(unittest.TestCase):
                 "senior-zero-preflight-report",
                 "senior-zero-app-center-policy",
                 "senior-zero-acceptance-runner --dry-run",
+                "senior-zero-command-index --dry-run",
+                "senior-zero-support-bundle",
+                "senior-zero-daily-checklist",
+                "senior-zero-command-doctor",
+                "senior-zero-launcher --dry-run",
+                "action_acceptance",
             ],
         )
         self.assertTrue(ok, f"Missing VM smoke checks: {missing}")
