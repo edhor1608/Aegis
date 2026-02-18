@@ -20,7 +20,7 @@ The app-center decision (curated defaults + explicit warning for "More Apps") ex
 
 ## Runtime Behavior
 
-The policy command validates the two policy files, enforces seed-curated packages, then prints policy content and:
+The policy command validates the two policy files, enforces seed curated packages, then prints policy content and:
 - `SENIOR_ZERO_APP_CENTER_POLICY_PASS`
 
 ## Manual VM Test
