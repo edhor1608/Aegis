@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DRY_RUN=0
+OUTPUT_FILE="$HOME/Documents/senior-zero-support-bundle.txt"
+
+print_plan() {
+  printf '%s\n' "included_checks=preflight_report,security_audit,network_check,storage_check,update_check"
+}
+
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN=1
+elif [[ $# -gt 0 ]]; then
+  echo "Usage: $0 [--dry-run]" >&2
+  exit 2
+fi
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  printf '%s\n' "SENIOR_ZERO_SUPPORT_BUNDLE_DRY_RUN"
+  print_plan
+  printf 'output_file=%s\n' "$OUTPUT_FILE"
+  exit 0
+fi
+
+if [[ "${SENIOR_ZERO_SUPPORT_BUNDLE_FAKE:-0}" == "1" ]]; then
+  printf '%s\n' "SENIOR_ZERO_SUPPORT_BUNDLE_FAKE"
+  PREFLIGHT_STATUS="ready"
+  SECURITY_STATUS="ready"
+  NETWORK_STATUS="ready"
+  STORAGE_STATUS="ready"
+  UPDATE_STATUS="ready"
+else
+  if command -v senior-zero-preflight-report >/dev/null 2>&1; then PREFLIGHT_STATUS="ready"; else PREFLIGHT_STATUS="missing"; fi
+  if command -v senior-zero-security-audit >/dev/null 2>&1; then SECURITY_STATUS="ready"; else SECURITY_STATUS="missing"; fi
+  if command -v senior-zero-network-check >/dev/null 2>&1; then NETWORK_STATUS="ready"; else NETWORK_STATUS="missing"; fi
+  if command -v senior-zero-storage-check >/dev/null 2>&1; then STORAGE_STATUS="ready"; else STORAGE_STATUS="missing"; fi
+  if command -v senior-zero-update-check >/dev/null 2>&1; then UPDATE_STATUS="ready"; else UPDATE_STATUS="missing"; fi
+fi
+
+mkdir -p "$(dirname "$OUTPUT_FILE")"
+cat > "$OUTPUT_FILE" <<EOF_BLOCK
+check_preflight_report=$PREFLIGHT_STATUS
+check_security_audit=$SECURITY_STATUS
+check_network_check=$NETWORK_STATUS
+check_storage_check=$STORAGE_STATUS
+check_update_check=$UPDATE_STATUS
+EOF_BLOCK
+
+printf 'SENIOR_ZERO_SUPPORT_BUNDLE_WRITTEN=%s\n' "$OUTPUT_FILE"
+if [[ "$PREFLIGHT_STATUS" == "ready" && "$SECURITY_STATUS" == "ready" && "$NETWORK_STATUS" == "ready" && "$STORAGE_STATUS" == "ready" && "$UPDATE_STATUS" == "ready" ]]; then
+  printf '%s\n' "SENIOR_ZERO_SUPPORT_BUNDLE_READY"
+else
+  printf '%s\n' "SENIOR_ZERO_SUPPORT_BUNDLE_PARTIAL"
+fi
