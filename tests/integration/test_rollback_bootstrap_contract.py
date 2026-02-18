@@ -31,6 +31,7 @@ class RollbackBootstrapContractTests(unittest.TestCase):
             [
                 "findmnt -n -o FSTYPE /",
                 "snapper create-config /",
+                "awk 'NR>1 {print $2}'",
                 "systemctl enable --now snapper-timeline.timer",
                 "systemctl enable --now snapper-cleanup.timer",
                 "/var/lib/senior-zero/rollback-bootstrap.done",
