@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DRY_RUN=0
+
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN=1
+elif [[ $# -gt 0 ]]; then
+  echo "Usage: $0 [--dry-run]" >&2
+  exit 2
+fi
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  cat <<'EOF'
+SENIOR_ZERO_PREFLIGHT_REPORT_DRY_RUN
+networkmanager_active
+unattended_upgrades_enabled
+locale_en_us_present
+locale_de_de_present
+snapper_available
+btrfs_available
+EOF
+  exit 0
+fi
+
+failures=0
+
+check() {
+  local name="$1"
+  shift
+  if "$@" >/dev/null 2>&1; then
+    printf 'PASS: %s\n' "$name"
+    return
+  fi
+  printf 'FAIL: %s\n' "$name" >&2
+  failures=$((failures + 1))
+}
+
+check "networkmanager_active" systemctl is-active --quiet NetworkManager
+check "unattended_upgrades_enabled" systemctl is-enabled --quiet unattended-upgrades
+check "locale_en_us_present" bash -lc "locale -a | grep -Eiq '^en_US\\.utf8$'"
+check "locale_de_de_present" bash -lc "locale -a | grep -Eiq '^de_DE\\.utf8$'"
+check "snapper_available" command -v snapper
+check "btrfs_available" command -v btrfs
+
+printf 'INFO: user=%s uid=%s\n' "$(id -un)" "$(id -u)"
+
+if [[ "$failures" -eq 0 ]]; then
+  printf '%s\n' "SENIOR_ZERO_PREFLIGHT_REPORT_PASS"
+  exit 0
+fi
+
+printf 'SENIOR_ZERO_PREFLIGHT_REPORT_FAIL: %s checks failed\n' "$failures" >&2
+exit 1

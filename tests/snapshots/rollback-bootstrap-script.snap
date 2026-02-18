@@ -19,7 +19,7 @@ if [[ "$root_fs" != "btrfs" ]]; then
   exit 0
 fi
 
-if ! snapper list-configs | awk 'NR>1 {print $2}' | grep -qx '/'; then
+if ! snapper list-configs | awk 'NR>1 {print $1}' | grep -qx 'root'; then
   snapper create-config /
 fi
 

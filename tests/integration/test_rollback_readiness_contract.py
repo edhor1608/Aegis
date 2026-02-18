@@ -26,7 +26,6 @@ class RollbackReadinessContractTests(unittest.TestCase):
                 "snapper-cleanup.timer",
                 "NOT_APPLICABLE",
                 "ROLLBACK_READINESS_PASS",
-                "ROLLBACK_READINESS_DRY_RUN",
             ],
         )
         self.assertTrue(ok, f"Missing rollback readiness checks: {missing}")

@@ -10,14 +10,10 @@ elif [[ $# -gt 0 ]]; then
   exit 2
 fi
 
-PRECHECKS=(
+CHECKS=(
   "command -v snapper >/dev/null 2>&1"
   "command -v btrfs >/dev/null 2>&1"
-)
-
-ROOT_FS_CHECK="findmnt -n -o FSTYPE /"
-
-BTRFS_CHECKS=(
+  "findmnt -n -o FSTYPE /"
   "snapper list-configs | awk 'NR>1 {print \$1}' | grep -qx 'root'"
   "systemctl is-enabled snapper-timeline.timer | grep -qx 'enabled'"
   "systemctl is-enabled snapper-cleanup.timer | grep -qx 'enabled'"
@@ -25,14 +21,12 @@ BTRFS_CHECKS=(
 
 if [[ "$DRY_RUN" -eq 1 ]]; then
   printf '%s\n' "ROLLBACK_READINESS_DRY_RUN"
-  printf '%s\n' "${PRECHECKS[@]}"
-  printf '%s\n' "$ROOT_FS_CHECK"
-  printf '%s\n' "${BTRFS_CHECKS[@]}"
+  printf '%s\n' "${CHECKS[@]}"
   exit 0
 fi
 
-for check_cmd in "${PRECHECKS[@]}"; do
-  if bash -c "$check_cmd"; then
+for check_cmd in "${CHECKS[@]:0:2}"; do
+  if bash -lc "$check_cmd"; then
     printf 'PASS: %s\n' "$check_cmd"
   else
     printf 'FAIL: %s\n' "$check_cmd" >&2
@@ -48,8 +42,8 @@ if [[ "$root_fs" != "btrfs" ]]; then
   exit 0
 fi
 
-for check_cmd in "${BTRFS_CHECKS[@]}"; do
-  if bash -c "$check_cmd"; then
+for check_cmd in "${CHECKS[@]:3}"; do
+  if bash -lc "$check_cmd"; then
     printf 'PASS: %s\n' "$check_cmd"
   else
     printf 'FAIL: %s\n' "$check_cmd" >&2

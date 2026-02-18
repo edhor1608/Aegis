@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Senior Zero Storage Check
+Comment=Check storage and snapshot readiness
+Exec=lxterminal -e senior-zero-storage-check
+Terminal=false
+Categories=System;

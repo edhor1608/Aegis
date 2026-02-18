@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Senior Zero Update Check
+Comment=Check security update policy status
+Exec=lxterminal -e senior-zero-update-check
+Terminal=false
+Categories=System;

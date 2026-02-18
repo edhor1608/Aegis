@@ -1,8 +1,13 @@
 PYTHON ?= python3
 
-.PHONY: test test-unit test-integration test-snapshot test-e2e
+.PHONY: all clean test test-unit test-integration test-snapshot test-e2e
+
+all: test
 
 test: test-unit test-integration test-snapshot test-e2e
+
+clean:
+	@echo "No build artifacts to clean yet"
 
 test-unit:
 	$(PYTHON) -m unittest discover -s tests/unit -v
