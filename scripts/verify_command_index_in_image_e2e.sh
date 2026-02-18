@@ -12,7 +12,10 @@ echo "$DRY_OUTPUT" | grep -q "planned_commands=senior-zero-preflight-report,seni
 RUN_OUTPUT="$(SENIOR_ZERO_COMMAND_INDEX_FAKE=1 bash "$SCRIPT")"
 echo "$RUN_OUTPUT" | grep -q "cmd_preflight_report=available"
 echo "$RUN_OUTPUT" | grep -q "cmd_self_check=available"
+echo "$RUN_OUTPUT" | grep -q "cmd_session_report=available"
 echo "$RUN_OUTPUT" | grep -q "cmd_support_bundle=available"
+echo "$RUN_OUTPUT" | grep -q "cmd_daily_checklist=available"
+echo "$RUN_OUTPUT" | grep -q "cmd_command_doctor=available"
 echo "$RUN_OUTPUT" | grep -q "cmd_acceptance_runner=available"
 echo "$RUN_OUTPUT" | grep -q "SENIOR_ZERO_COMMAND_INDEX_READY"
 
