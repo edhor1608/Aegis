@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Senior Zero Acceptance Runner
+Comment=Run acceptance commands in dry-run mode
+Exec=lxterminal -e senior-zero-acceptance-runner --dry-run
+Terminal=false
+Categories=Utility;
