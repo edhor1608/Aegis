@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Senior Zero Session Report
+Comment=Generate a one-file session readiness report
+Exec=lxterminal -e senior-zero-session-report
+Terminal=false
+Categories=System;

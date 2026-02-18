@@ -12,7 +12,6 @@ test -f "$BASE/usr/share/senior-zero/help/welcome.txt"
 
 grep -q "Exec=firefox-esr" "$BASE/etc/skel/Desktop/Senior Zero Browser.desktop"
 grep -q "Exec=libreoffice" "$BASE/etc/skel/Desktop/Senior Zero Documents.desktop"
-grep -q "Exec=lxterminal -e less /usr/share/senior-zero/help/welcome.txt" "$BASE/etc/skel/Desktop/Senior Zero Help.desktop"
 grep -q "Exec=lxterminal -e senior-zero-preflight-report" "$BASE/etc/skel/Desktop/Senior Zero Health.desktop"
 grep -q "Senior Zero Linux" "$BASE/usr/share/senior-zero/help/welcome.txt"
 

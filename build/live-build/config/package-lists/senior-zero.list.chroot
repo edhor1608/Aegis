@@ -1,12 +1,10 @@
 linux-image-amd64
 live-boot
 live-config
-user-setup
-task-lxde-desktop
-lxterminal
-less
+task-lxqt-desktop
 network-manager
 snapper
+grub-btrfs
 btrfs-progs
 unattended-upgrades
 apt-listchanges

@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DRY_RUN=0
+OUTPUT_FILE="$HOME/Documents/senior-zero-daily-checklist.txt"
+HELP_FILE="/usr/share/senior-zero/help/welcome.txt"
+
+print_plan() {
+  printf '%s\n' "checklist_items=network,updates,storage,help"
+}
+
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN=1
+elif [[ $# -gt 0 ]]; then
+  echo "Usage: $0 [--dry-run]" >&2
+  exit 2
+fi
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  printf '%s\n' "SENIOR_ZERO_DAILY_CHECKLIST_DRY_RUN"
+  print_plan
+  printf 'output_file=%s\n' "$OUTPUT_FILE"
+  exit 0
+fi
+
+if [[ "${SENIOR_ZERO_DAILY_CHECKLIST_FAKE:-0}" == "1" ]]; then
+  printf '%s\n' "SENIOR_ZERO_DAILY_CHECKLIST_FAKE"
+  NETWORK_STATUS="ready"
+  UPDATE_STATUS="ready"
+  STORAGE_STATUS="ready"
+  HELP_STATUS="ready"
+else
+  if command -v senior-zero-network-check >/dev/null 2>&1; then NETWORK_STATUS="ready"; else NETWORK_STATUS="missing"; fi
+  if command -v senior-zero-update-check >/dev/null 2>&1; then UPDATE_STATUS="ready"; else UPDATE_STATUS="missing"; fi
+  if command -v senior-zero-storage-check >/dev/null 2>&1; then STORAGE_STATUS="ready"; else STORAGE_STATUS="missing"; fi
+  if [[ -f "$HELP_FILE" ]]; then HELP_STATUS="ready"; else HELP_STATUS="missing"; fi
+fi
+
+mkdir -p "$(dirname "$OUTPUT_FILE")"
+cat > "$OUTPUT_FILE" <<EOF_BLOCK
+item_network=$NETWORK_STATUS
+item_updates=$UPDATE_STATUS
+item_storage=$STORAGE_STATUS
+item_help=$HELP_STATUS
+EOF_BLOCK
+
+printf 'SENIOR_ZERO_DAILY_CHECKLIST_WRITTEN=%s\n' "$OUTPUT_FILE"
+if [[ "$NETWORK_STATUS" == "ready" && "$UPDATE_STATUS" == "ready" && "$STORAGE_STATUS" == "ready" && "$HELP_STATUS" == "ready" ]]; then
+  printf '%s\n' "SENIOR_ZERO_DAILY_CHECKLIST_READY"
+else
+  printf '%s\n' "SENIOR_ZERO_DAILY_CHECKLIST_PARTIAL"
+fi

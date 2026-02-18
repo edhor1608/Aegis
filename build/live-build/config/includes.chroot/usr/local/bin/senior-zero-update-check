@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DRY_RUN=0
+POLICY_FILE="/etc/apt/preferences.d/90-senior-zero-security.pref"
+UNATTENDED_SERVICE="unattended-upgrades"
+POLICY_LABEL="policy_file=/etc/apt/preferences.d/90-senior-zero-security.pref"
+UNATTENDED_LABEL="unattended_service=unattended-upgrades"
+
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN=1
+elif [[ $# -gt 0 ]]; then
+  echo "Usage: $0 [--dry-run]" >&2
+  exit 2
+fi
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  printf '%s\n' "SENIOR_ZERO_UPDATE_CHECK_DRY_RUN"
+  printf '%s\n' "$POLICY_LABEL"
+  printf '%s\n' "$UNATTENDED_LABEL"
+  printf '%s\n' "apt_update_required_for_fresh_data"
+  exit 0
+fi
+
+if [[ "${SENIOR_ZERO_UPDATE_CHECK_FAKE:-0}" == "1" ]]; then
+  printf '%s\n' "SENIOR_ZERO_UPDATE_CHECK_FAKE"
+  SECURITY_PIN_PRESENT="yes"
+  UNATTENDED_ENABLED="yes"
+else
+  if [[ -f "$POLICY_FILE" ]]; then
+    SECURITY_PIN_PRESENT="yes"
+  else
+    SECURITY_PIN_PRESENT="no"
+  fi
+
+  if command -v systemctl >/dev/null 2>&1 && systemctl is-enabled "$UNATTENDED_SERVICE" >/dev/null 2>&1; then
+    UNATTENDED_ENABLED="yes"
+  else
+    UNATTENDED_ENABLED="no"
+  fi
+fi
+
+printf '%s\n' "$POLICY_LABEL"
+printf '%s\n' "$UNATTENDED_LABEL"
+printf 'security_pin_present=%s\n' "$SECURITY_PIN_PRESENT"
+printf 'unattended_upgrades_enabled=%s\n' "$UNATTENDED_ENABLED"
+printf '%s\n' "apt_update_required_for_fresh_data"
+
+if [[ "$SECURITY_PIN_PRESENT" == "yes" && "$UNATTENDED_ENABLED" == "yes" ]]; then
+  printf '%s\n' "SENIOR_ZERO_UPDATE_CHECK_OK"
+else
+  printf '%s\n' "SENIOR_ZERO_UPDATE_CHECK_ATTENTION"
+fi

@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DRY_RUN=0
+OUTPUT_FILE="$HOME/Documents/senior-zero-diagnostics.txt"
+
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN=1
+elif [[ $# -gt 0 ]]; then
+  echo "Usage: $0 [--dry-run]" >&2
+  exit 2
+fi
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  printf '%s\n' "SENIOR_ZERO_DIAGNOSTICS_REPORT_DRY_RUN"
+  printf 'output_file=%s\n' "$OUTPUT_FILE"
+  printf '%s\n' "report_fields=timestamp_utc,user,locale,networkmanager_active,unattended_upgrades_enabled,memory_total_mb,memory_available_mb"
+  exit 0
+fi
+
+if [[ "${SENIOR_ZERO_DIAGNOSTICS_REPORT_FAKE:-0}" == "1" ]]; then
+  printf '%s\n' "SENIOR_ZERO_DIAGNOSTICS_REPORT_FAKE"
+  TIMESTAMP_UTC="2026-01-01T00:00:00Z"
+  USER_NAME="${USER:-user}"
+  LOCALE_VALUE="en_US.UTF-8"
+  NETWORKMANAGER_ACTIVE="yes"
+  UNATTENDED_ENABLED="yes"
+  MEMORY_TOTAL_MB="4096"
+  MEMORY_AVAILABLE_MB="3400"
+else
+  TIMESTAMP_UTC="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  USER_NAME="$(id -un 2>/dev/null || echo unknown)"
+  LOCALE_VALUE="${LANG:-unknown}"
+
+  if command -v systemctl >/dev/null 2>&1 && systemctl is-active NetworkManager >/dev/null 2>&1; then
+    NETWORKMANAGER_ACTIVE="yes"
+  else
+    NETWORKMANAGER_ACTIVE="no"
+  fi
+
+  if command -v systemctl >/dev/null 2>&1 && systemctl is-enabled unattended-upgrades >/dev/null 2>&1; then
+    UNATTENDED_ENABLED="yes"
+  else
+    UNATTENDED_ENABLED="no"
+  fi
+
+  MEMORY_TOTAL_MB="$(free -m | awk '/^Mem:/ {print $2}')"
+  MEMORY_AVAILABLE_MB="$(free -m | awk '/^Mem:/ {print $7}')"
+fi
+
+MEMORY_TOTAL_MB="${MEMORY_TOTAL_MB:-0}"
+MEMORY_AVAILABLE_MB="${MEMORY_AVAILABLE_MB:-0}"
+
+mkdir -p "$(dirname "$OUTPUT_FILE")"
+cat > "$OUTPUT_FILE" <<EOF
+SENIOR_ZERO_DIAGNOSTICS_REPORT_V1
+timestamp_utc=$TIMESTAMP_UTC
+user=$USER_NAME
+locale=$LOCALE_VALUE
+networkmanager_active=$NETWORKMANAGER_ACTIVE
+unattended_upgrades_enabled=$UNATTENDED_ENABLED
+memory_total_mb=$MEMORY_TOTAL_MB
+memory_available_mb=$MEMORY_AVAILABLE_MB
+EOF
+
+printf 'SENIOR_ZERO_DIAGNOSTICS_REPORT_WRITTEN=%s\n' "$OUTPUT_FILE"

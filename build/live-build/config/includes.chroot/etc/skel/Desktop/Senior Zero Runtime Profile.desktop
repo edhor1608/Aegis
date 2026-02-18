@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Senior Zero Runtime Profile
+Comment=Print runtime profile for low-end hardware checks
+Exec=lxterminal -e senior-zero-runtime-profile
+Terminal=false
+Categories=System;

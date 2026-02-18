@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DRY_RUN=0
+
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN=1
+elif [[ $# -gt 0 ]]; then
+  echo "Usage: $0 [--dry-run]" >&2
+  exit 2
+fi
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  printf '%s\n' "SENIOR_ZERO_STORAGE_CHECK_DRY_RUN"
+  printf '%s\n' "planned_checks=btrfs_command,snapper_command,root_fs,root_usage"
+  exit 0
+fi
+
+if [[ "${SENIOR_ZERO_STORAGE_CHECK_FAKE:-0}" == "1" ]]; then
+  printf '%s\n' "SENIOR_ZERO_STORAGE_CHECK_FAKE"
+  BTRFS_AVAILABLE="yes"
+  SNAPPER_AVAILABLE="yes"
+  ROOT_FS_BTRFS="yes"
+  ROOT_USAGE_PERCENT="42"
+else
+  if command -v btrfs >/dev/null 2>&1; then
+    BTRFS_AVAILABLE="yes"
+  else
+    BTRFS_AVAILABLE="no"
+  fi
+
+  if command -v snapper >/dev/null 2>&1; then
+    SNAPPER_AVAILABLE="yes"
+  else
+    SNAPPER_AVAILABLE="no"
+  fi
+
+  if command -v findmnt >/dev/null 2>&1 && [[ "$(findmnt -n -o FSTYPE / 2>/dev/null || true)" == "btrfs" ]]; then
+    ROOT_FS_BTRFS="yes"
+  else
+    ROOT_FS_BTRFS="no"
+  fi
+
+  ROOT_USAGE_PERCENT="$(df --output=pcent / 2>/dev/null | tail -n1 | tr -dc '0-9')"
+  ROOT_USAGE_PERCENT="${ROOT_USAGE_PERCENT:-unknown}"
+fi
+
+printf 'btrfs_command_available=%s\n' "$BTRFS_AVAILABLE"
+printf 'snapper_command_available=%s\n' "$SNAPPER_AVAILABLE"
+printf 'root_fs_is_btrfs=%s\n' "$ROOT_FS_BTRFS"
+printf 'root_usage_percent=%s\n' "$ROOT_USAGE_PERCENT"
+
+if [[ "$BTRFS_AVAILABLE" == "yes" && "$SNAPPER_AVAILABLE" == "yes" && "$ROOT_FS_BTRFS" == "yes" && "$ROOT_USAGE_PERCENT" =~ ^[0-9]+$ && "$ROOT_USAGE_PERCENT" -le 90 ]]; then
+  printf '%s\n' "SENIOR_ZERO_STORAGE_CHECK_OK"
+else
+  printf '%s\n' "SENIOR_ZERO_STORAGE_CHECK_ATTENTION"
+fi
