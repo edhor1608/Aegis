@@ -6,12 +6,6 @@ SCRIPT="$ROOT_DIR/build/live-build/config/includes.chroot/usr/local/bin/senior-z
 AUTOSTART="$ROOT_DIR/build/live-build/config/includes.chroot/etc/xdg/autostart/senior-zero-onboarding.desktop"
 TMP_HOME="$ROOT_DIR/out/tmp-onboarding-home"
 
-cleanup() {
-  rm -rf "$TMP_HOME"
-}
-
-trap cleanup EXIT INT TERM
-
 rm -rf "$TMP_HOME"
 mkdir -p "$TMP_HOME"
 
