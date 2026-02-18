@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+lb config noauto \
+  --mode debian \
+  --distribution stable \
+  --architectures amd64 \
+  --debian-installer live \
+  --archive-areas "main contrib non-free-firmware" \
+  --apt-indices false \
+  --apt-recommends false \
+  --memtest none
