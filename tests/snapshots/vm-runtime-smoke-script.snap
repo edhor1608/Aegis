@@ -20,6 +20,11 @@ CHECKS=(
   "command -v senior-zero-preflight-report >/dev/null"
   "command -v senior-zero-app-center-policy >/dev/null"
   "senior-zero-acceptance-runner --dry-run | grep -q 'ACCEPTANCE_RUNNER_DRY_RUN'"
+  "command -v senior-zero-support-bundle >/dev/null"
+  "command -v senior-zero-daily-checklist >/dev/null"
+  "command -v senior-zero-command-doctor >/dev/null"
+  "senior-zero-command-index --dry-run | grep -q 'senior-zero-command-doctor'"
+  "senior-zero-launcher --dry-run | grep -q 'action_acceptance=senior-zero-acceptance-runner --dry-run'"
 )
 
 if [[ "$DRY_RUN" -eq 1 ]]; then
