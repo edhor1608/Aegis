@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DRY_RUN=0
+
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN=1
+elif [[ $# -gt 0 ]]; then
+  echo "Usage: $0 [--dry-run]" >&2
+  exit 2
+fi
+
+CHECKS=(
+  "networkmanager_active::systemctl is-active --quiet NetworkManager"
+  "unattended_upgrades_enabled::systemctl is-enabled --quiet unattended-upgrades"
+  "preflight_command_available::command -v senior-zero-preflight-report >/dev/null"
+  "app_center_policy_available::command -v senior-zero-app-center-policy >/dev/null"
+  "language_switch_available::command -v senior-zero-language-switch >/dev/null"
+)
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  printf '%s\n' "SENIOR_ZERO_HEALTH_SUMMARY_DRY_RUN"
+  printf '%s\n' "${CHECKS[@]}"
+  exit 0
+fi
+
+failures=0
+for entry in "${CHECKS[@]}"; do
+  name="${entry%%::*}"
+  cmd="${entry#*::}"
+  if bash -lc "$cmd"; then
+    printf 'PASS: %s\n' "$name"
+  else
+    printf 'FAIL: %s\n' "$name" >&2
+    failures=$((failures + 1))
+  fi
+done
+
+if [[ "$failures" -eq 0 ]]; then
+  printf '%s\n' "SENIOR_ZERO_HEALTHY"
+  exit 0
+fi
+
+printf 'SENIOR_ZERO_ATTENTION_REQUIRED: %s checks failed\n' "$failures" >&2
+exit 1

@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DRY_RUN=0
+
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN=1
+elif [[ $# -gt 0 ]]; then
+  echo "Usage: $0 [--dry-run]" >&2
+  exit 2
+fi
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  printf '%s\n' "SENIOR_ZERO_NETWORK_CHECK_DRY_RUN"
+  printf '%s\n' "planned_checks=networkmanager,default_route,dns,internet_ping"
+  exit 0
+fi
+
+if [[ "${SENIOR_ZERO_NETWORK_CHECK_FAKE:-0}" == "1" ]]; then
+  printf '%s\n' "SENIOR_ZERO_NETWORK_CHECK_FAKE"
+  NETWORKMANAGER_ACTIVE="yes"
+  DEFAULT_ROUTE_PRESENT="yes"
+  DNS_RESOLUTION_OK="yes"
+  INTERNET_PING_OK="yes"
+else
+  if command -v systemctl >/dev/null 2>&1 && systemctl is-active NetworkManager >/dev/null 2>&1; then
+    NETWORKMANAGER_ACTIVE="yes"
+  else
+    NETWORKMANAGER_ACTIVE="no"
+  fi
+
+  if command -v ip >/dev/null 2>&1 && ip route show default | grep -q '^default '; then
+    DEFAULT_ROUTE_PRESENT="yes"
+  else
+    DEFAULT_ROUTE_PRESENT="no"
+  fi
+
+  if command -v getent >/dev/null 2>&1 && getent hosts deb.debian.org >/dev/null 2>&1; then
+    DNS_RESOLUTION_OK="yes"
+  else
+    DNS_RESOLUTION_OK="no"
+  fi
+
+  if command -v ping >/dev/null 2>&1 && ping -c 1 -W 1 1.1.1.1 >/dev/null 2>&1; then
+    INTERNET_PING_OK="yes"
+  else
+    INTERNET_PING_OK="no"
+  fi
+fi
+
+printf 'networkmanager_active=%s\n' "$NETWORKMANAGER_ACTIVE"
+printf 'default_route_present=%s\n' "$DEFAULT_ROUTE_PRESENT"
+printf 'dns_resolution_ok=%s\n' "$DNS_RESOLUTION_OK"
+printf 'internet_ping_ok=%s\n' "$INTERNET_PING_OK"
+
+if [[ "$NETWORKMANAGER_ACTIVE" == "yes" && "$DEFAULT_ROUTE_PRESENT" == "yes" && "$DNS_RESOLUTION_OK" == "yes" && "$INTERNET_PING_OK" == "yes" ]]; then
+  printf '%s\n' "SENIOR_ZERO_NETWORK_CHECK_OK"
+else
+  printf '%s\n' "SENIOR_ZERO_NETWORK_CHECK_ATTENTION"
+fi
