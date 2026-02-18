@@ -36,8 +36,8 @@ class InstallTargetInImageContractTests(unittest.TestCase):
                 "snapper-timeline.timer",
                 "snapper-cleanup.timer",
                 "/var/lib/senior-zero/rollback-bootstrap.done",
-                "de_DE.utf8",
-                "en_US.utf8",
+                "de_DE\\.(utf8|utf-8)",
+                "en_US\\.(utf8|utf-8)",
                 "INSTALL_TARGET_SMOKE_PASS",
             ],
         )

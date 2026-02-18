@@ -21,8 +21,8 @@ CHECKS=(
   "systemctl is-active snapper-timeline.timer | grep -qx 'active'"
   "systemctl is-active snapper-cleanup.timer | grep -qx 'active'"
   "test -f /var/lib/senior-zero/rollback-bootstrap.done"
-  "locale -a | grep -Eiq 'de_DE.utf8'"
-  "locale -a | grep -Eiq 'en_US.utf8'"
+  "locale -a | grep -Eiq 'de_DE\.(utf8|utf-8)'"
+  "locale -a | grep -Eiq 'en_US\.(utf8|utf-8)'"
 )
 
 if [[ "$DRY_RUN" -eq 1 ]]; then
