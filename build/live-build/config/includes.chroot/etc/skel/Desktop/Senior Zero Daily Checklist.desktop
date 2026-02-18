@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Senior Zero Daily Checklist
+Comment=Generate a daily readiness checklist
+Exec=lxterminal -e senior-zero-daily-checklist
+Terminal=false
+Categories=Utility;

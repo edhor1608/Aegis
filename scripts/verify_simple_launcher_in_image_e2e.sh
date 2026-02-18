@@ -9,12 +9,13 @@ DRY_OUTPUT="$(bash "$SCRIPT" --dry-run)"
 echo "$DRY_OUTPUT" | grep -q "SENIOR_ZERO_LAUNCHER_DRY_RUN"
 echo "$DRY_OUTPUT" | grep -q "action_browser=firefox-esr"
 echo "$DRY_OUTPUT" | grep -q "action_help=xdg-open /usr/share/senior-zero/help/welcome.txt"
-
-ORDER_OUTPUT="$(bash "$SCRIPT" --dry-run --action help)"
-echo "$ORDER_OUTPUT" | grep -q "selected_action=help"
+echo "$DRY_OUTPUT" | grep -q "action_acceptance=senior-zero-acceptance-runner --dry-run"
 
 RUN_OUTPUT="$(SENIOR_ZERO_LAUNCHER_NO_EXEC=1 bash "$SCRIPT" --action help)"
 echo "$RUN_OUTPUT" | grep -q "SENIOR_ZERO_LAUNCHER_ACTION_EXECUTED"
+
+RUN_ACCEPTANCE_OUTPUT="$(SENIOR_ZERO_LAUNCHER_NO_EXEC=1 bash "$SCRIPT" --action acceptance)"
+echo "$RUN_ACCEPTANCE_OUTPUT" | grep -q "action=acceptance command=senior-zero-acceptance-runner --dry-run"
 
 set +e
 INVALID_OUTPUT="$(bash "$SCRIPT" --action not-real 2>&1)"
