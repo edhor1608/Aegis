@@ -31,11 +31,29 @@ PINNING_CFG = (
     / "90-senior-zero-security.pref"
 )
 PIPELINE_SCRIPT = REPO_ROOT / "scripts" / "live_build_pipeline.sh"
+LOCALE_HOOK = (
+    REPO_ROOT
+    / "build"
+    / "live-build"
+    / "config"
+    / "hooks"
+    / "normal"
+    / "6000-configure-locales.hook.chroot"
+)
+VM_SMOKE_SCRIPT = REPO_ROOT / "scripts" / "vm_runtime_smoke.sh"
 
 
 class LiveBuildPipelineContractTests(unittest.TestCase):
     def test_required_pipeline_files_exist(self) -> None:
-        required = [AUTO_CONFIG, PACKAGE_LIST, UNATTENDED_CFG, PINNING_CFG, PIPELINE_SCRIPT]
+        required = [
+            AUTO_CONFIG,
+            PACKAGE_LIST,
+            UNATTENDED_CFG,
+            PINNING_CFG,
+            PIPELINE_SCRIPT,
+            LOCALE_HOOK,
+            VM_SMOKE_SCRIPT,
+        ]
         missing = [str(path) for path in required if not path.exists()]
         self.assertEqual(missing, [], f"Missing files: {missing}")
 
@@ -82,6 +100,35 @@ class LiveBuildPipelineContractTests(unittest.TestCase):
             ],
         )
         self.assertTrue(ok, f"Missing apt pinning entries: {missing}")
+
+    def test_locale_hook_generates_de_and_en_utf8(self) -> None:
+        text = read_text(LOCALE_HOOK)
+        ok, missing = contains_all(
+            text,
+            [
+                "en_US.UTF-8 UTF-8",
+                "de_DE.UTF-8 UTF-8",
+                "locale-gen",
+                "LANG=en_US.UTF-8",
+            ],
+        )
+        self.assertTrue(ok, f"Missing locale baseline entries: {missing}")
+
+    def test_vm_smoke_script_covers_runtime_baseline(self) -> None:
+        text = read_text(VM_SMOKE_SCRIPT)
+        ok, missing = contains_all(
+            text,
+            [
+                "systemctl is-enabled unattended-upgrades",
+                "systemctl is-active NetworkManager",
+                "locale -a",
+                "de_DE.utf8",
+                "en_US.utf8",
+                "whoami",
+                "id -u",
+            ],
+        )
+        self.assertTrue(ok, f"Missing VM smoke checks: {missing}")
 
 
 if __name__ == "__main__":
