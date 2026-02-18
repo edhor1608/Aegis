@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DRY_RUN=0
+OUTPUT_FILE="$HOME/Documents/senior-zero-command-doctor.txt"
+
+print_plan() {
+  printf '%s\n' "required_commands=senior-zero-preflight-report,senior-zero-security-audit,senior-zero-network-check,senior-zero-storage-check,senior-zero-self-check,senior-zero-support-bundle,senior-zero-daily-checklist"
+}
+
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN=1
+elif [[ $# -gt 0 ]]; then
+  echo "Usage: $0 [--dry-run]" >&2
+  exit 2
+fi
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  printf '%s\n' "SENIOR_ZERO_COMMAND_DOCTOR_DRY_RUN"
+  print_plan
+  printf 'output_file=%s\n' "$OUTPUT_FILE"
+  exit 0
+fi
+
+if [[ "${SENIOR_ZERO_COMMAND_DOCTOR_FAKE:-0}" == "1" ]]; then
+  printf '%s\n' "SENIOR_ZERO_COMMAND_DOCTOR_FAKE"
+  PREFLIGHT_STATUS="ready"
+  SECURITY_STATUS="ready"
+  NETWORK_STATUS="ready"
+  STORAGE_STATUS="ready"
+  SELF_CHECK_STATUS="ready"
+  SUPPORT_BUNDLE_STATUS="ready"
+  DAILY_CHECKLIST_STATUS="ready"
+else
+  if command -v senior-zero-preflight-report >/dev/null 2>&1; then PREFLIGHT_STATUS="ready"; else PREFLIGHT_STATUS="missing"; fi
+  if command -v senior-zero-security-audit >/dev/null 2>&1; then SECURITY_STATUS="ready"; else SECURITY_STATUS="missing"; fi
+  if command -v senior-zero-network-check >/dev/null 2>&1; then NETWORK_STATUS="ready"; else NETWORK_STATUS="missing"; fi
+  if command -v senior-zero-storage-check >/dev/null 2>&1; then STORAGE_STATUS="ready"; else STORAGE_STATUS="missing"; fi
+  if command -v senior-zero-self-check >/dev/null 2>&1; then SELF_CHECK_STATUS="ready"; else SELF_CHECK_STATUS="missing"; fi
+  if command -v senior-zero-support-bundle >/dev/null 2>&1; then SUPPORT_BUNDLE_STATUS="ready"; else SUPPORT_BUNDLE_STATUS="missing"; fi
+  if command -v senior-zero-daily-checklist >/dev/null 2>&1; then DAILY_CHECKLIST_STATUS="ready"; else DAILY_CHECKLIST_STATUS="missing"; fi
+fi
+
+mkdir -p "$(dirname "$OUTPUT_FILE")"
+cat > "$OUTPUT_FILE" <<EOF_BLOCK
+command_senior_zero_preflight_report=$PREFLIGHT_STATUS
+command_senior_zero_security_audit=$SECURITY_STATUS
+command_senior_zero_network_check=$NETWORK_STATUS
+command_senior_zero_storage_check=$STORAGE_STATUS
+command_senior_zero_self_check=$SELF_CHECK_STATUS
+command_senior_zero_support_bundle=$SUPPORT_BUNDLE_STATUS
+command_senior_zero_daily_checklist=$DAILY_CHECKLIST_STATUS
+EOF_BLOCK
+
+printf 'SENIOR_ZERO_COMMAND_DOCTOR_WRITTEN=%s\n' "$OUTPUT_FILE"
+if [[ "$PREFLIGHT_STATUS" == "ready" && "$SECURITY_STATUS" == "ready" && "$NETWORK_STATUS" == "ready" && "$STORAGE_STATUS" == "ready" && "$SELF_CHECK_STATUS" == "ready" && "$SUPPORT_BUNDLE_STATUS" == "ready" && "$DAILY_CHECKLIST_STATUS" == "ready" ]]; then
+  printf '%s\n' "SENIOR_ZERO_COMMAND_DOCTOR_READY"
+else
+  printf '%s\n' "SENIOR_ZERO_COMMAND_DOCTOR_PARTIAL"
+fi

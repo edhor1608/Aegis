@@ -6,7 +6,7 @@ ACTION=""
 HELP_FILE="/usr/share/senior-zero/help/welcome.txt"
 
 print_usage() {
-  printf '%s\n' "Usage: senior-zero-launcher [--dry-run] [--action <browser|mail|documents|media|help|health>]"
+  printf '%s\n' "Usage: senior-zero-launcher [--dry-run] [--action <browser|mail|documents|media|help|health|acceptance>]"
 }
 
 resolve_command() {
@@ -17,6 +17,7 @@ resolve_command() {
     media) printf '%s\n' "vlc" ;;
     help) printf '%s\n' "xdg-open $HELP_FILE" ;;
     health) printf '%s\n' "senior-zero-health-summary" ;;
+    acceptance) printf '%s\n' "senior-zero-acceptance-runner --dry-run" ;;
     *) return 1 ;;
   esac
 }
@@ -28,6 +29,7 @@ print_catalog() {
   printf '%s\n' "action_media=vlc"
   printf '%s\n' "action_help=xdg-open /usr/share/senior-zero/help/welcome.txt"
   printf '%s\n' "action_health=senior-zero-health-summary"
+  printf '%s\n' "action_acceptance=senior-zero-acceptance-runner --dry-run"
 }
 
 if [[ "${1:-}" == "--dry-run" ]]; then

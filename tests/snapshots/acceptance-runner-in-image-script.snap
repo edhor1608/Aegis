@@ -16,6 +16,9 @@ CMDS=(
   "/usr/local/sbin/senior-zero-rollback-rehearsal"
   "/usr/local/sbin/senior-zero-preflight-report"
   "/usr/local/sbin/senior-zero-app-center-policy"
+  "/usr/local/bin/senior-zero-support-bundle"
+  "/usr/local/bin/senior-zero-daily-checklist"
+  "/usr/local/bin/senior-zero-command-doctor"
 )
 
 if [[ "$DRY_RUN" -eq 1 ]]; then
