@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DRY_RUN=0
+
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN=1
+elif [[ $# -gt 0 ]]; then
+  echo "Usage: $0 [--dry-run]" >&2
+  exit 2
+fi
+
+CHECKS=(
+  "findmnt -n -o FSTYPE /"
+  "snapper list-configs"
+  "snapper -c root create"
+  "snapper -c root list"
+  "snapper -c root delete"
+)
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  printf '%s\n' "ROLLBACK_REHEARSAL_DRY_RUN"
+  printf '%s\n' "${CHECKS[@]}"
+  exit 0
+fi
+
+if ! command -v snapper >/dev/null 2>&1; then
+  printf '%s\n' "FAIL: snapper missing" >&2
+  exit 1
+fi
+
+root_fs="$(findmnt -n -o FSTYPE /)"
+printf 'INFO: root filesystem: %s\n' "$root_fs"
+if [[ "$root_fs" != "btrfs" ]]; then
+  printf '%s\n' "FAIL: rollback rehearsal requires btrfs root" >&2
+  exit 1
+fi
+
+if ! snapper list-configs | awk 'NR>1 {print $1}' | grep -qx 'root'; then
+  printf '%s\n' "FAIL: snapper root config missing" >&2
+  exit 1
+fi
+
+tag="senior-zero-rehearsal-$(date +%Y%m%d%H%M%S)"
+snap_id="$(snapper -c root create --print-number -d "$tag")"
+if [[ -z "$snap_id" ]]; then
+  printf '%s\n' "FAIL: snapshot creation returned empty id" >&2
+  exit 1
+fi
+printf 'PASS: created snapshot id=%s\n' "$snap_id"
+
+if snapper -c root list | awk 'NR>2 {print $1}' | grep -qx "$snap_id"; then
+  printf '%s\n' "PASS: snapshot visible in list"
+else
+  printf '%s\n' "FAIL: snapshot not found after creation" >&2
+  exit 1
+fi
+
+snapper -c root delete "$snap_id"
+if snapper -c root list | awk 'NR>2 {print $1}' | grep -qx "$snap_id"; then
+  printf '%s\n' "FAIL: snapshot still present after delete" >&2
+  exit 1
+fi
+printf '%s\n' "PASS: snapshot cleanup complete"
+
+printf '%s\n' "ROLLBACK_REHEARSAL_PASS"

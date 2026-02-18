@@ -16,8 +16,6 @@ def default_docker_config() -> dict[str, str]:
 
 
 def build_docker_commands(cfg: dict[str, str]) -> list[list[str]]:
-    workspace = cfg["workspace_mount"]
-    workspace_q = shlex.quote(workspace)
     return [
         [
             "docker",
@@ -46,11 +44,8 @@ def build_docker_commands(cfg: dict[str, str]) -> list[list[str]]:
             cfg["image_tag"],
             "bash",
             "-lc",
-            (
-                f"set -euo pipefail; workspace={workspace_q}; rm -rf -- \"$workspace\"; "
-                f"mkdir -p -- \"$workspace\"; cp -a /src/. \"$workspace\"/; cd -- \"$workspace\"; "
-                "./scripts/live_build_pipeline.sh; cp build/live-build/live-image-amd64.hybrid.iso /out/"
-            ),
+            "set -euo pipefail; rm -rf /tmp/repo; mkdir -p /tmp/repo; cp -a /src/. /tmp/repo/; "
+            "cd /tmp/repo; ./scripts/live_build_pipeline.sh; cp build/live-build/live-image-amd64.hybrid.iso /out/",
         ],
     ]
 

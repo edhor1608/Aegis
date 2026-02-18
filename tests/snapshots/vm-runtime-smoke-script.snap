@@ -2,8 +2,6 @@
 set -euo pipefail
 
 DRY_RUN=0
-EXPECTED_USER="${VM_SMOKE_USER:-user}"
-EXPECTED_UID="${VM_SMOKE_UID:-1000}"
 
 if [[ "${1:-}" == "--dry-run" ]]; then
   DRY_RUN=1
@@ -13,12 +11,20 @@ elif [[ $# -gt 0 ]]; then
 fi
 
 CHECKS=(
-  "whoami | grep -qx '${EXPECTED_USER}'"
-  "id -u | grep -qx '${EXPECTED_UID}'"
+  "whoami | grep -qx 'user'"
+  "id -u | grep -qx '1000'"
   "systemctl is-enabled unattended-upgrades | grep -qx 'enabled'"
   "systemctl is-active NetworkManager | grep -qx 'active'"
   "locale -a | grep -Eiq 'en_US.utf8'"
   "locale -a | grep -Eiq 'de_DE.utf8'"
+  "command -v senior-zero-preflight-report >/dev/null"
+  "command -v senior-zero-app-center-policy >/dev/null"
+  "senior-zero-acceptance-runner --dry-run | grep -q 'ACCEPTANCE_RUNNER_DRY_RUN'"
+  "command -v senior-zero-support-bundle >/dev/null"
+  "command -v senior-zero-daily-checklist >/dev/null"
+  "command -v senior-zero-command-doctor >/dev/null"
+  "senior-zero-command-index --dry-run | grep -q 'senior-zero-command-doctor'"
+  "senior-zero-launcher --dry-run | grep -q 'action_acceptance=senior-zero-acceptance-runner --dry-run'"
 )
 
 if [[ "$DRY_RUN" -eq 1 ]]; then

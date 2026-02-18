@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Senior Zero Documents
+Comment=Open documents and letters
+Exec=libreoffice
+Icon=libreoffice-startcenter
+Terminal=false
+Categories=Office;

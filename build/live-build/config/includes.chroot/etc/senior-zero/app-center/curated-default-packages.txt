@@ -1,0 +1,5 @@
+# Senior Zero curated default app list
+firefox-esr
+thunderbird
+libreoffice
+vlc

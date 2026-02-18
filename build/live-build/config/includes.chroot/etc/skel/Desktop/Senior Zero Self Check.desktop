@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Senior Zero Self Check
+Comment=Run a baseline self-check of core Senior Zero tools
+Exec=lxterminal -e senior-zero-self-check
+Terminal=false
+Categories=System;
