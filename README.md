@@ -69,3 +69,14 @@ Please prefer stability, accessibility, and low-complexity solutions.
 ## Trademark
 
 The name **Aegis** should be governed by a separate `TRADEMARKS.md` policy.
+
+<!-- status:start -->
+## Status
+- State: active
+- Summary: Define current milestone.
+- Next: Define next concrete step.
+- Updated: 2026-02-21
+- Branch: `main`
+- Working Tree: dirty (3 files)
+- Last Commit: 875078a (2026-02-18) feat(acceptance): expand runner with new support checks [recovery from #32] (#52)
+<!-- status:end -->
