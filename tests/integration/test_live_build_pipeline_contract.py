@@ -45,13 +45,17 @@ class LiveBuildPipelineContractTests(unittest.TestCase):
             text,
             [
                 "snapper",
-                "grub-btrfs",
                 "unattended-upgrades",
                 "apt-listchanges",
                 "task-lxqt-desktop",
             ],
         )
         self.assertTrue(ok, f"Missing package baseline entries: {missing}")
+        self.assertNotIn(
+            "grub-btrfs",
+            text,
+            "Debian stable live-build baseline must not require unavailable grub-btrfs package",
+        )
 
     def test_unattended_policy_is_security_focused(self) -> None:
         text = read_text(UNATTENDED_CFG)
