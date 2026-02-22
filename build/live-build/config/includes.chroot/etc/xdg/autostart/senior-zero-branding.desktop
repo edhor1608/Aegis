@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Aegis Session Branding
+Comment=Apply Aegis visual branding at session start
+Exec=senior-zero-branding-apply
+OnlyShowIn=LXDE;
+X-GNOME-Autostart-enabled=true

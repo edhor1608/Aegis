@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
-Name=Senior Zero Launcher
-Comment=Open the simplified Senior Zero launcher
-Exec=lxterminal -e senior-zero-launcher
+Name=Aegis Home
+Comment=Open Aegis Home
+Exec=senior-zero-launcher --gui
 Terminal=false
 Categories=Utility;

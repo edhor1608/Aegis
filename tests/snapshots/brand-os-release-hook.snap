@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+
+SOURCE="/usr/lib/os-release"
+TARGET="/etc/os-release"
+
+if [ ! -e "$TARGET" ] && [ -f "$SOURCE" ]; then
+  TARGET="$SOURCE"
+fi
+
+if [ -e "$TARGET" ]; then
+  sed -i 's/^PRETTY_NAME=.*/PRETTY_NAME="Aegis Linux"/' "$TARGET"
+  sed -i 's/^NAME=.*/NAME="Aegis"/' "$TARGET"
+  sed -i 's/^ID=.*/ID=aegis/' "$TARGET"
+fi

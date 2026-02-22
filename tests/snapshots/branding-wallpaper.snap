@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22465a"/>
+      <stop offset="100%" stop-color="#3d6f88"/>
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+  <g fill="#173241" opacity="0.45">
+    <path d="M0,860 C220,720 520,740 760,910 C980,1060 1270,1080 1540,940 C1690,860 1810,840 1920,860 L1920,1080 L0,1080 Z"/>
+    <path d="M0,610 C250,460 490,480 710,630 C960,810 1230,820 1530,670 C1680,590 1810,560 1920,570 L1920,860 C1800,840 1680,860 1540,940 C1270,1080 980,1060 760,910 C520,740 220,720 0,860 Z"/>
+    <path d="M0,330 C220,210 520,210 770,360 C980,490 1280,520 1570,390 C1710,330 1830,310 1920,320 L1920,570 C1810,560 1680,590 1530,670 C1230,820 960,810 710,630 C490,480 250,460 0,610 Z"/>
+  </g>
+  <g fill="#eaf4f9" font-family="DejaVu Sans" text-anchor="middle">
+    <text x="960" y="430" font-size="88" font-weight="700">Aegis</text>
+    <text x="960" y="500" font-size="34" opacity="0.95">Senior-friendly secure desktop</text>
+    <text x="960" y="556" font-size="30" opacity="0.9">Simple • Stable • Safe</text>
+  </g>
+</svg>

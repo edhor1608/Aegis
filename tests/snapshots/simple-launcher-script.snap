@@ -3,10 +3,13 @@ set -euo pipefail
 
 DRY_RUN=0
 ACTION=""
+GUI_MODE=0
 HELP_FILE="/usr/share/senior-zero/help/welcome.txt"
+MENU_TITLE="Aegis Home"
+MENU_TEXT="Choose what you want to do now."
 
 print_usage() {
-  printf '%s\n' "Usage: senior-zero-launcher [--dry-run] [--action <browser|mail|documents|media|help|health|acceptance>]"
+  printf '%s\n' "Usage: senior-zero-launcher [--dry-run] [--gui] [--action <browser|mail|documents|media|help|health|acceptance>]"
 }
 
 resolve_command() {
@@ -32,8 +35,47 @@ print_catalog() {
   printf '%s\n' "action_acceptance=senior-zero-acceptance-runner --dry-run"
 }
 
+run_gui() {
+  if [[ "${SENIOR_ZERO_LAUNCHER_NO_GUI:-0}" == "1" ]] || [[ -z "${DISPLAY:-}" ]] || ! command -v xmessage >/dev/null 2>&1; then
+    printf '%s\n' "SENIOR_ZERO_LAUNCHER_GUI"
+    print_catalog
+    return 0
+  fi
+
+  set +e
+  xmessage \
+    -center \
+    -default Close \
+    -buttons "Browser:1,Mail:2,Documents:3,Media:4,Help:5,Health:6,System Check:7,Close:0" \
+    -title "$MENU_TITLE" \
+    "$MENU_TEXT"
+  choice_status=$?
+  set -e
+
+  case "$choice_status" in
+    1) ACTION="browser" ;;
+    2) ACTION="mail" ;;
+    3) ACTION="documents" ;;
+    4) ACTION="media" ;;
+    5) ACTION="help" ;;
+    6) ACTION="health" ;;
+    7) ACTION="acceptance" ;;
+    *) ACTION="" ;;
+  esac
+
+  printf 'SENIOR_ZERO_LAUNCHER_GUI selected_action=%s\n' "${ACTION:-close}"
+}
+
 if [[ "${1:-}" == "--dry-run" ]]; then
   DRY_RUN=1
+elif [[ "${1:-}" == "--gui" ]]; then
+  GUI_MODE=1
+  if [[ "${2:-}" == "--dry-run" ]]; then
+    DRY_RUN=1
+  elif [[ $# -gt 1 ]]; then
+    print_usage >&2
+    exit 2
+  fi
 elif [[ "${1:-}" == "--action" ]]; then
   ACTION="${2:-}"
   if [[ -z "$ACTION" ]]; then
@@ -53,6 +95,7 @@ fi
 
 if [[ "$DRY_RUN" -eq 1 ]]; then
   printf '%s\n' "SENIOR_ZERO_LAUNCHER_DRY_RUN"
+  printf '%s\n' "SENIOR_ZERO_LAUNCHER_GUI"
   print_catalog
   if [[ -n "$ACTION" ]]; then
     COMMAND="$(resolve_command "$ACTION" || true)"
@@ -62,10 +105,11 @@ if [[ "$DRY_RUN" -eq 1 ]]; then
   exit 0
 fi
 
-if [[ -z "$ACTION" ]]; then
-  printf '%s\n' "SENIOR_ZERO_LAUNCHER_ACTION_REQUIRED"
-  print_catalog
-  exit 0
+if [[ "$GUI_MODE" -eq 1 ]] || [[ -z "$ACTION" ]]; then
+  run_gui
+  if [[ -z "$ACTION" ]]; then
+    exit 0
+  fi
 fi
 
 COMMAND="$(resolve_command "$ACTION" || true)"
