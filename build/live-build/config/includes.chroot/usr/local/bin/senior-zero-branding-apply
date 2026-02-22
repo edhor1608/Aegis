@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DRY_RUN=0
+WALLPAPER="/usr/share/senior-zero/branding/aegis-wallpaper.svg"
+STAMP_FILE="${HOME:-/home/user}/.config/senior-zero/branding.done"
+
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN=1
+elif [[ $# -gt 0 ]]; then
+  echo "Usage: $0 [--dry-run]" >&2
+  exit 2
+fi
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  printf '%s\n' "SENIOR_ZERO_BRANDING_DRY_RUN"
+  printf 'wallpaper=%s\n' "$WALLPAPER"
+  printf '%s\n' "pcmanfm --set-wallpaper"
+  printf 'stamp_file=%s\n' "$STAMP_FILE"
+  exit 0
+fi
+
+if [[ -f "$STAMP_FILE" ]]; then
+  printf 'SENIOR_ZERO_BRANDING_ALREADY_APPLIED wallpaper=%s\n' "$WALLPAPER"
+  exit 0
+fi
+
+if command -v pcmanfm >/dev/null 2>&1; then
+  pcmanfm --set-wallpaper="$WALLPAPER" --wallpaper-mode=fit >/dev/null 2>&1 || true
+fi
+
+mkdir -p "$(dirname "$STAMP_FILE")"
+touch "$STAMP_FILE"
+
+printf 'SENIOR_ZERO_BRANDING_APPLIED wallpaper=%s\n' "$WALLPAPER"

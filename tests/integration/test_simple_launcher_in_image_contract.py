@@ -40,6 +40,7 @@ class SimpleLauncherInImageContractTests(unittest.TestCase):
             text,
             [
                 "SENIOR_ZERO_LAUNCHER_DRY_RUN",
+                "SENIOR_ZERO_LAUNCHER_GUI",
                 "action_browser=firefox-esr",
                 "action_mail=thunderbird",
                 "action_documents=libreoffice --writer",
@@ -59,8 +60,8 @@ class SimpleLauncherInImageContractTests(unittest.TestCase):
             text,
             [
                 "Type=Application",
-                "Name=Senior Zero Launcher",
-                "Exec=lxterminal -e senior-zero-launcher",
+                "Name=Aegis Home",
+                "Exec=senior-zero-launcher --gui",
             ],
         )
         self.assertTrue(ok, f"Simple launcher desktop entry mismatch: {missing}")
